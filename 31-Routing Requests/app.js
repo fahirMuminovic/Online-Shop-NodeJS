@@ -1,4 +1,5 @@
 const http = require('http');
+const fs = require('fs');
 
 //this function runs for every request made to the server
 /* function rqListener(req,res){
@@ -11,12 +12,33 @@ http.createServer(rqListener); */
 //store the server address in variable named server
 const server = http.createServer((req, res) => {
 	const url = req.url;
+	const method = req.method;
 
 	if (url === '/') {
 		res.write('<html>');
 		res.write('<head><title>Enter Message</title></head>');
-		res.write('<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">Send</button></form></body>');
+		res.write(
+			'<body><form action="/message" method="POST"><input type="text" name="message"><button type="submit">Send</button></form></body>'
+		);
 		res.write('</html>');
+		return res.end();
+	}
+
+	if (url === '/message' && method === 'POST') {
+		const body = [];
+		//data is sent in chunks 
+		req.on('data', (chunk) => {
+			console.log(chunk);
+			body.push(chunk);
+		});
+		req.on('end', () => {
+			const parsedBody = Buffer.concat(body).toString();
+			console.log(parsedBody);
+			const message = parsedBody.split('=')[1];
+			fs.writeFileSync('message.txt', message);
+		});
+
+		res.writeHead(302, { Location: '/' });
 		return res.end();
 	}
 
