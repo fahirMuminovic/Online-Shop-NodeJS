@@ -26,20 +26,20 @@ const server = http.createServer((req, res) => {
 
 	if (url === '/message' && method === 'POST') {
 		const body = [];
-		//data is sent in chunks 
+		//data is sent in chunks
 		req.on('data', (chunk) => {
 			console.log(chunk);
 			body.push(chunk);
 		});
-		req.on('end', () => {
+		return req.on('end', () => {
 			const parsedBody = Buffer.concat(body).toString();
 			console.log(parsedBody);
 			const message = parsedBody.split('=')[1];
 			fs.writeFileSync('message.txt', message);
-		});
 
-		res.writeHead(302, { Location: '/' });
-		return res.end();
+			res.writeHead(302, { Location: '/' });
+			return res.end();
+		});
 	}
 
 	//node.js way of sending a response
