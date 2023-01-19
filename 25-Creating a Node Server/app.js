@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
 	res.setHeader('Content-Type', 'text/html');
 	res.write('<html>');
 	res.write('<head><title>My First Server</title></head>');
-	res.write('<h1>Hello from my Node.js Server!</h1>');
+	res.write('<body><h1>Hello from my Node.js Server!</h1></body>');
 	res.write('</html>');
 	res.end();
 });
