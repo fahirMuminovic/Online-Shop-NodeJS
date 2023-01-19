@@ -12,6 +12,14 @@ http.createServer(rqListener); */
 const server = http.createServer((req, res) => {
 	//console.log(req);
 	console.log(req.url, req.method, req.headers);
+
+    //node.js way of sending a response
+	res.setHeader('Content-Type', 'text/html');
+	res.write('<html>');
+	res.write('<head><title>My First Server</title></head>');
+	res.write('<h1>Hello from my Node.js Server!</h1>');
+	res.write('</html>');
+	res.end();
 });
 
 //listen for incoming requests made to the server
