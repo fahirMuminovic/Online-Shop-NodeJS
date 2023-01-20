@@ -1,4 +1,5 @@
-const http = require('http');
+//const http = require('http');
+//this is no longer needed because of changes to how the server starts on line 25
 
 const express = require('express');
 
@@ -12,9 +13,13 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
 	console.log('In another the middleware!');
-    // ...
+    //send response
+    res.send('<h1>Hello from express!</h1>');
+    //.send sets the header automaticaly, it can be overwritten by using res.setHeader()
 });
 
-const server = http.createServer(app);
+// const server = http.createServer(app);
+// server.listen(3000);
 
-server.listen(3000);
+//shorter way of starting the server using express
+app.listen(3000);
