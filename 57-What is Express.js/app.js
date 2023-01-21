@@ -11,13 +11,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 //the order matters when we use router.use in the router files
 //but if we use router.get or post or any other
 //then express uses exact matching for the routes
-app.use(adminRoutes);
+app.use('/admin',adminRoutes);
 app.use(shopRoutes);
 
 //catch-all middleware
 app.use((req,res,next)=>{
     res.status(404).send(`
-    <h1>Page Not Found</h1>
+    <h1>Page Not Found!</h1>
     `);
 });
 
