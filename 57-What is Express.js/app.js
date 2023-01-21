@@ -14,6 +14,15 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(adminRoutes);
 app.use(shopRoutes);
 
+//catch-all middleware
+app.use((req,res,next)=>{
+    res.status(404).send(`
+    <h1>Page Not Found</h1>
+    `);
+});
 
 //shorter way of starting the server using express
-app.listen(3000);
+app.listen(3000, ()=>{
+    console.log('App started on http://localhost:3000');
+});
+
