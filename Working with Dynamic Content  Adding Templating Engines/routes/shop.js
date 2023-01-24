@@ -8,10 +8,11 @@ const adminData = require('./admin');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-	/* console.log(adminData.products);
-  res.sendFile(path.join(rootDir, 'views', 'shop.html')); */
+	//use the data that an admin has entered in the form on /admin/add-product
+	const products = adminData.products;
 	//use the shop.pug template for this get request
-	res.render('shop');
+	//as the second argument to .render we can send data as an key value pare, also it is possible to send multiple key value pares contaning different data
+	res.render('shop', { prods: products, docTitle: 'Shop' });
 });
 
 module.exports = router;
