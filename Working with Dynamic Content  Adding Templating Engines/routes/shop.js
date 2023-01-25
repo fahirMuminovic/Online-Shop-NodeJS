@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
 	const products = adminData.products;
 	//use the shop.pug template for this get request
 	//as the second argument to .render we can send data as an key value pare, also it is possible to send multiple key value pares contaning different data
-	res.render('shop', { prods: products, docTitle: 'Shop' });
+	res.render('shop', { prods: products, pageTitle: 'Shop', path: '/' });
 });
 
 module.exports = router;
