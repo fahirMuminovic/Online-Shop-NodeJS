@@ -7,7 +7,7 @@ const engine = require('express-handlebars');
 const app = express();
 //define the default templating engine
 //for handlebars we need to manually set the views engine
-app.engine('handlebars', engine());
+app.engine('handlebars', engine({layoutsDir: 'views/layouts/', defaultLayout: 'main-layout'}));
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
