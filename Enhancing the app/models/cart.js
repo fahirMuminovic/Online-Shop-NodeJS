@@ -9,24 +9,30 @@ module.exports = class Cart {
 		fs.readFile(filePath, (err, fileContent) => {
 			let cart = { products: [], totalPrice: 0 };
 			if (!err) {
+				//if a cart already exists read it from file
 				cart = JSON.parse(fileContent);
 			}
 			//Analyze the cart => find existing products
-			const existingProductIndex = cart.products.findIndex((prod) => {
+			const productExistsIndex = cart.products.findIndex((prod) => {
 				return prod.id === id;
 			});
-			const existingProduct = cart.products[existingProductIndex];
-			let updatedProduct;
+			const productExists = cart.products[productExistsIndex];
+			let newProduct;
 			//Add new product/ inrease quantity
-			if (existingProduct) {
-				updatedProduct = { ...existingProduct };
-				updatedProduct.quantity = updatedProduct.quantity + 1;
+			if (productExists) {
+				//copy the existing product and add quantity property
+				newProduct = { ...productExists };
+				newProduct.quantity = newProduct.quantity + 1;
 				cart.products = [...cart.products];
-				cart.products[existingProductIndex] = updatedProduct;
+				//replace the old product with the updated info about quantity
+				cart.products[productExistsIndex] = newProduct;
 			} else {
-				updatedProduct = { id: id, quantity: 1 };
-				cart.products = [...cart.products, updatedProduct];
+				//create new product with id and quantity properties
+				newProduct = { id: id, quantity: 1 };
+				//add the new product to the cart.products array
+				cart.products = [...cart.products, newProduct];
 			}
+			//update the price of the cart total
 			cart.totalPrice = cart.totalPrice + Number(productPrice);
 
 			//write new cart to file
