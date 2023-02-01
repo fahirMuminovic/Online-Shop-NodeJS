@@ -63,9 +63,19 @@ module.exports = class Cart {
 				updatedCart.totalPrice = cart.totalPrice - productPrice * productQuantity;
 
 				//write updated cart to file
-				fs.writeFile(filePath, JSON.stringify(updatedCart), (err) =>{
+				fs.writeFile(filePath, JSON.stringify(updatedCart), (err) => {
 					console.log(err);
-				})
+				});
+			}
+		});
+	}
+
+	static getCart(callBack) {
+		fs.readFile(filePath, (err, fileContent) => {
+			if (err) {
+				callBack([]);
+			} else {
+				callBack(JSON.parse(fileContent));
 			}
 		});
 	}
