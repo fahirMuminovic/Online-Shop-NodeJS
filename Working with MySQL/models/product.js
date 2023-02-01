@@ -10,7 +10,14 @@ class Product {
 		this.price = price;
 	}
 
-	save() {}
+	save() {
+		return db.execute('INSERT INTO products (title,price,description,imgUrl) VALUES (?,?,?,?)', [
+			this.title,
+			this.price,
+			this.description,
+			this.imgUrl,
+		]);
+	}
 
 	static deleteById(id) {}
 
