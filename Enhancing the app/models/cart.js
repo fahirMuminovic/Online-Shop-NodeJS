@@ -53,6 +53,10 @@ module.exports = class Cart {
 				const updatedCart = { ...cart };
 				//find product that is being deleted
 				const product = updatedCart.products.find((prod) => prod.id === id);
+				if (!product) {
+					//if there is no such product then exit
+					return;
+				}
 				//get the quantity of the product that is to be deleted
 				const productQuantity = product.quantity;
 
