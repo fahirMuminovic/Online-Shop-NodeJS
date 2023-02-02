@@ -30,7 +30,7 @@ User.hasMany(Product);
 
 //makes tables in the db from models
 sequelize
-	.sync({ force: true })
+	.sync()
 	.then((result) => {
 		app.listen(3000, () => {
 			//console.log(result);
