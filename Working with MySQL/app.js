@@ -4,6 +4,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
 
+const Product = require('./models/product');
+const User = require('./models/user');
+
 const app = express();
 //define the default templating engine
 app.set('view engine', 'ejs');
@@ -22,9 +25,12 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
+
 //makes tables in the db from models
 sequelize
-	.sync()
+	.sync({ force: true })
 	.then((result) => {
 		app.listen(3000, () => {
 			//console.log(result);
