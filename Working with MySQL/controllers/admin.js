@@ -14,17 +14,18 @@ exports.postAddProduct = (req, res, next) => {
 	const price = req.body.price;
 	const description = req.body.description;
 
-	//id, title, price, imgUrl, description
-	Product.create({
-		title: title,
-		price: price,
-		imgUrl: imgUrl,
-		description: description,
-	})
+	//createProduct is a method provided by sequelize because of the relation between User and Product tables in db
+	req.user
+		.createProduct({
+			title: title,
+			price: price,
+			imgUrl: imgUrl,
+			description: description,
+		})
 		.then((result) => {
 			console.log(result);
 			console.log(`Created Product`);
-			res.redirect('/admin/products')
+			res.redirect('/admin/products');
 		})
 		.catch((err) => {
 			console.log(err);
@@ -40,8 +41,11 @@ exports.getEditProduct = (req, res, next) => {
 		return res.redirect('/');
 	}
 
-	Product.findByPk(productId)
-		.then((product) => {
+	//Product.findByPk(productId)  --> if all users should be allowed to edit all products
+	req.user
+		.getProducts({ where: { id: productId } }) // if user can only edit the products that are associated to that user
+		.then((products) => {
+			const product = products[0];
 			if (!product) {
 				//TODO: show error page
 				return res.redirect('/');
@@ -111,7 +115,9 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-	Product.findAll()
+	//Product.findAll()
+	req.user
+		.getProducts()
 		.then((products) => {
 			res.render('admin/products', {
 				prods: products,
