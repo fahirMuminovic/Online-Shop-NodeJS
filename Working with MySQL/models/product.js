@@ -1,4 +1,4 @@
-const db = require('../util/database');
+/* const db = require('../util/database');
 const Cart = require('./cart');
 
 class Product {
@@ -29,5 +29,36 @@ class Product {
 		return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
 	}
 }
+
+module.exports = Product;
+ */
+//gives back a constructor
+const Sequelize = require('sequelize');
+const sequelize = require('../util/database');
+
+const Product = sequelize.define('product', {
+	id: {
+		type: Sequelize.INTEGER,
+		autoIncrement: true,
+		allowNull: false,
+		primaryKey: true,
+	},
+	title: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+	price: {
+		type: Sequelize.DOUBLE,
+		allowNull: false,
+	},
+	imgUrl: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+	description: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+});
 
 module.exports = Product;
