@@ -85,17 +85,6 @@ exports.postEditProduct = (req, res, next) => {
 		.catch((err) => {
 			console.log(err);
 		});
-	/* 
-	const updatedProduct = new Product(
-		productId,
-		updatedTitle,
-		updatedImgUrl,
-		updatedDescription,
-		updatedPrice
-	);
-
-	updatedProduct.save();
-	*/
 };
 
 exports.postDeleteProduct = (req, res, next) => {

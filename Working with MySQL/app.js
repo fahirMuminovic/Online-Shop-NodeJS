@@ -45,7 +45,7 @@ Product.belongsToMany(Cart, { through: CartItem });
 
 //makes tables in the db from models
 sequelize
-	.sync({ force: true })
+	.sync()
 	.then((result) => {
 		//creating a placeholder user for now
 		return User.findByPk(1);
@@ -58,7 +58,9 @@ sequelize
 		return Promise.resolve(user);
 	})
 	.then((user) => {
-		//console.log(user);
+		return user.createCart();
+	})
+	.then((cart) => {
 		app.listen(3000, () => {
 			console.log('App started on http://localhost:3000/');
 		});

@@ -6,3 +6,6 @@ Working with Dynamic Content  Adding Templating Engines - EJS/node_modules
 The Model View Controller (MVC)/node_modules
 Enhancing the app/node_modules
 Working with MySQL/node_modules
+ServerOne.session.sql
+.vscode
+.vscode/settings.json
