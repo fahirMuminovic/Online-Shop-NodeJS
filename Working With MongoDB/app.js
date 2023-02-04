@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoConnect = require('./util/database');
+const mongoConnect = require('./util/database').mongoConnect;
 
 const app = express();
 //define the default templating engine
@@ -12,7 +12,7 @@ app.set('views', './views');
 
 const errorController = require('./controllers/error');
 
-// const adminRoutes = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 // const shopRoutes = require('./routes/shop');
 
 app.use((req, res, next) => {
@@ -22,18 +22,18 @@ app.use((req, res, next) => {
 	// 		next();
 	// 	})
 	// 	.catch((err) => console.log(err));
+	next();
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/admin', adminRoutes.routes);
+app.use('/admin', adminRoutes.routes);
 // app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(process.env.MONGO_URI, (client) => {
-	console.log(client);
+mongoConnect(process.env.MONGO_URI, () => {
 	app.listen(3000, () => {
 		console.log(`App started on http://localhost:3000/`);
 	});
