@@ -50,7 +50,8 @@ Order.belongsToMany(Product, { through: OrderItem });
 Product.belongsToMany(Order, { through: OrderItem });
 //makes tables in the db from models
 sequelize
-	.sync({ force: true })
+	//.sync({ force: true })
+	.sync()
 	.then((result) => {
 		//creating a placeholder user for now
 		return User.findByPk(1);
