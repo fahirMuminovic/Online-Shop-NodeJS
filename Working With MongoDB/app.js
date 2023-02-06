@@ -3,7 +3,8 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoConnect = require('./util/database').mongoConnect;
+const { mongoConnect } = require('./util/database');
+const User = require('./models/user');
 
 const app = express();
 //define the default templating engine
@@ -15,14 +16,14 @@ const errorController = require('./controllers/error');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
+//this is only temporary code
 app.use((req, res, next) => {
-	// User.findByPk(1)
-	// 	.then((user) => {
-	// 		req.user = user;
-	// 		next();
-	// 	})
-	// 	.catch((err) => console.log(err));
-	next();
+	User.findById('63e16026557909546b85738e')
+		.then((user) => {
+			req.user = user;
+			next();
+		})
+		.catch((err) => console.log(err));
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));

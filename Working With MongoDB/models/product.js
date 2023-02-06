@@ -1,4 +1,4 @@
-const getDb = require('../util/database').getDb;
+const { getDb } = require('../util/database');
 const { mongodb, ObjectId } = require('mongodb');
 
 class Product {
@@ -31,8 +31,7 @@ class Product {
 		const db = getDb();
 		return db
 			.collection('products')
-			.find({ _id: new ObjectId(productId) })
-			.next()
+			.findOne({ _id: new ObjectId(productId) })
 			.then((product) => {
 				return product;
 			})
