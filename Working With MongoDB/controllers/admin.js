@@ -1,4 +1,17 @@
+const { ObjectId } = require('mongodb');
 const Product = require('../models/product');
+
+exports.getProducts = (req, res, next) => {
+	Product.fetchAll()
+		.then((products) => {
+			res.render('admin/products', {
+				prods: products,
+				pageTitle: 'Admin Products',
+				path: '/admin/products',
+			});
+		})
+		.catch((err) => console.log(err));
+};
 
 exports.getAddProduct = (req, res, next) => {
 	res.render('admin/edit-product', {
@@ -29,60 +42,55 @@ exports.postAddProduct = (req, res, next) => {
 		});
 };
 
-// exports.getEditProduct = (req, res, next) => {
-// 	const isInEditMode = req.query.edit;
-// 	const productId = req.params.productId;
+exports.getEditProduct = (req, res, next) => {
+	const isInEditMode = req.query.edit;
+	const productId = req.params.productId;
 
-// 	if (!isInEditMode) {
-// 		//TODO: improve this
-// 		return res.redirect('/');
-// 	}
+	if (!isInEditMode) {
+		return res.redirect('/');
+	}
 
-// 	//Product.findByPk(productId)  --> if all users should be allowed to edit all products
-// 	req.user
-// 		.getProducts({ where: { id: productId } }) // if user can only edit the products that are associated to that user
-// 		.then((products) => {
-// 			const product = products[0];
-// 			if (!product) {
-// 				//TODO: show error page
-// 				return res.redirect('/');
-// 			}
-// 			res.render('admin/edit-product', {
-// 				pageTitle: 'Edit Product',
-// 				path: '/admin/edit-product',
-// 				editMode: isInEditMode,
-// 				product: product,
-// 			});
-// 		})
-// 		.catch((err) => {
-// 			console.log(err);
-// 		});
-// };
+	Product.findById(productId)
+		.then((product) => {
+			if (!product) {
+				//TODO: show error page
+				return res.redirect('/');
+			}
+			res.render('admin/edit-product', {
+				pageTitle: 'Edit Product',
+				path: '/admin/edit-product',
+				editMode: isInEditMode,
+				product: product,
+			});
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+};
 
-// exports.postEditProduct = (req, res, next) => {
-// 	const productId = req.body.productId;
-// 	const updatedTitle = req.body.title;
-// 	const updatedImgUrl = req.body.imgUrl;
-// 	const updatedPrice = req.body.price;
-// 	const updatedDescription = req.body.description;
+exports.postEditProduct = (req, res, next) => {
+	const productId = req.body.productId;
+	const updatedTitle = req.body.title;
+	const updatedImgUrl = req.body.imgUrl;
+	const updatedPrice = req.body.price;
+	const updatedDescription = req.body.description;
 
-// 	//constructor(id, title, imgUrl, description, price)
-// 	Product.findByPk(productId)
-// 		.then((product) => {
-// 			product.title = updatedTitle;
-// 			product.imgUrl = updatedImgUrl;
-// 			product.description = updatedDescription;
-// 			product.price = updatedPrice;
-// 			return product.save();
-// 		})
-// 		.then(() => {
-// 			console.log('Product successfully UPDATED');
-// 			res.redirect('/admin/products');
-// 		})
-// 		.catch((err) => {
-// 			console.log(err);
-// 		});
-// };
+	//constructor(title, price, imgUrl, description, _id)
+	const product = new Product(
+		updatedTitle,
+		updatedPrice,
+		updatedImgUrl,
+		updatedDescription,
+		productId
+	);
+	product
+		.save()
+		.then((result) => {
+			console.log(`DATABASE ENTRY ${productId} UPDATED SUCCESSFULLY`);
+			res.redirect('/admin/products');
+		})
+		.catch((err) => console.log(err));
+};
 
 // exports.postDeleteProduct = (req, res, next) => {
 // 	const productId = req.body.productId;
@@ -98,18 +106,4 @@ exports.postAddProduct = (req, res, next) => {
 // 		.catch((err) => {
 // 			console.log(err);
 // 		});
-// };
-
-// exports.getProducts = (req, res, next) => {
-// 	//Product.findAll()
-// 	req.user
-// 		.getProducts()
-// 		.then((products) => {
-// 			res.render('admin/products', {
-// 				prods: products,
-// 				pageTitle: 'Admin Products',
-// 				path: '/admin/products',
-// 			});
-// 		})
-// 		.catch((err) => console.log(err));
 // };

@@ -163,6 +163,7 @@ form {
 
 .card__image {
 	width: 100%;
+	padding: 5px;
 }
 
 .card__image img {
