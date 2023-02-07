@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
-const { mongoConnect } = require('./util/database');
+const mongoose = require('mongoose');
 const User = require('./models/user');
 
 const app = express();
@@ -34,9 +34,12 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(process.env.MONGO_URI, () => {
-	app.listen(3000, () => {
-		console.log(`App started on http://localhost:3000/`);
-	});
-});
+mongoose
+	.connect(process.env.MONGO_URI)
+	.then(
+		app.listen(3000, () => {
+			console.log(`App started on http://localhost:3000/`);
+		})
+	)
+	.catch((err) => console.log(err));
 
