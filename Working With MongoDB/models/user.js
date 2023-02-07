@@ -9,6 +9,20 @@ class User {
 		this._id = _id;
 	}
 
+	static findById(userId) {
+		const db = getDb();
+		return db
+			.collection('users')
+			.findOne({ _id: new ObjectId(userId) })
+			.then((user) => {
+				//console.log(user);
+				return user;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}
+
 	save() {
 		const db = getDb();
 		return db.collection('users').insertOne(this);
@@ -72,18 +86,32 @@ class User {
 			.updateOne({ _id: new ObjectId(this._id) }, { $set: { cart: { items: updatedCartItems } } });
 	}
 
-	static findById(userId) {
+	addOrder() {
 		const db = getDb();
-		return db
-			.collection('users')
-			.findOne({ _id: new ObjectId(userId) })
-			.then((user) => {
-				//console.log(user);
-				return user;
+		return this.getCart()
+			.then((products) => {
+				const order = {
+					items: products,
+					user: {
+						_id: new ObjectId(this._id),
+						username: this.username,
+						email: this.email,
+					},
+				};
+
+				return db.collection('orders').insertOne(order);
 			})
-			.catch((err) => {
-				console.log(err);
+			.then((result) => {
+				this.cart = { items: [] };
+				return db
+					.collection('users')
+					.updateOne({ _id: new ObjectId(this._id) }, { $set: { cart: { items: [] } } });
 			});
+	}
+
+	getOrders() {
+		const db = getDb();
+		// return db.collection('orders')
 	}
 }
 
