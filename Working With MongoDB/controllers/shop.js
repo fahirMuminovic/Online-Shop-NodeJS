@@ -69,49 +69,12 @@ exports.postCart = (req, res, next) => {
 		.catch((err) => {
 			console.log(err);
 		});
-	// let fetchedCart;
-	// let newQuantity = 1;
-	// req.user
-	// 	.getCart()
-	// 	.then((cart) => {
-	// 		fetchedCart = cart;
-	// 		return cart.getProducts({ where: { id: prodId } });
-	// 	})
-	// 	.then((cartItems) => {
-	// 		let cartItem;
-	// 		if (cartItems.length > 0) {
-	// 			cartItem = cartItems[0];
-	// 		}
-
-	// 		if (cartItem) {
-	// 			const oldQuantity = cartItem.cartItem.quantity;
-	// 			newQuantity = oldQuantity + 1;
-	// 			return cartItem;
-	// 		} else {
-	// 			return Product.findByPk(prodId);
-	// 		}
-	// 	})
-	// 	.then((cartItem) => {
-	// 		return fetchedCart.addProduct(cartItem, { through: { quantity: newQuantity } });
-	// 	})
-	// 	.then(() => {
-	// 		res.redirect('/cart');
-	// 	})
-	// 	.catch((err) => console.log(err));
 };
 
 exports.postDeleteCartItem = (req, res, next) => {
 	const productId = req.body.productId;
 	req.user
-		.getCart()
-		.then((cart) => {
-			return cart.getProducts({ where: { id: productId } });
-		})
-		.then((products) => {
-			const product = products[0];
-
-			return product.cartItem.destroy();
-		})
+		.deleteItemFromCart(productId)
 		.then((result) => {
 			res.redirect('/cart');
 		})
