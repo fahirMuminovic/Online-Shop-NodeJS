@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
-	Product.fetchAll()
+	Product.find()
 		.then((products) => {
 			res.render('admin/products', {
 				prods: products,
@@ -73,21 +73,20 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
 	const productId = req.body.productId;
+
 	const updatedTitle = req.body.title;
-	const updatedImgUrl = req.body.imgUrl;
 	const updatedPrice = req.body.price;
+	const updatedImgUrl = req.body.imgUrl;
 	const updatedDescription = req.body.description;
 
-	//constructor(title, price, imgUrl, description, _id)
-	const product = new Product(
-		updatedTitle,
-		updatedPrice,
-		updatedImgUrl,
-		updatedDescription,
-		productId
-	);
-	product
-		.save()
+	Product.findById(productId)
+		.then((product) => {
+			product.title = updatedTitle;
+			product.price = updatedPrice;
+			product.imgUrl = updatedImgUrl;
+			product.description = updatedDescription;
+			return product.save();
+		})
 		.then((result) => {
 			console.log(`DATABASE ENTRY ${productId} UPDATED SUCCESSFULLY`);
 			res.redirect('/admin/products');
@@ -98,7 +97,7 @@ exports.postEditProduct = (req, res, next) => {
 exports.postDeleteProduct = (req, res, next) => {
 	const productId = req.body.productId;
 
-	Product.deleteById(productId)
+	Product.findByIdAndRemove(productId)
 		.then(() => {
 			res.redirect('/admin/products');
 		})

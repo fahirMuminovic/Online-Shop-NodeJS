@@ -1,4 +1,4 @@
-const { getDb } = require('../util/database');
+/* const { getDb } = require('../util/database');
 const { ObjectId } = require('mongodb');
 
 class User {
@@ -119,3 +119,27 @@ class User {
 }
 
 module.exports = User;
+ */
+
+const { mongoose, Schema } = require('mongoose');
+
+const userSchema = new Schema({
+	username: {
+		type: String,
+		required: true,
+	},
+	email: {
+		type: String,
+		required: true,
+	},
+	cart: {
+		items: [
+			{
+				productId: { type: Schema.Types.ObjectId, required: true },
+				quantity: { type: Number, required: true },
+			},
+		],
+	},
+});
+
+module.exports = mongoose.model('User', userSchema);

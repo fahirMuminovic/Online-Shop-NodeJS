@@ -4,7 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const User = require('./models/user');
+const User = require('./models/user');
 
 const app = express();
 //define the default templating engine
@@ -16,18 +16,17 @@ const errorController = require('./controllers/error');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-//this is only temporary code
-// app.use((req, res, next) => {
-// 	User.findById('63e16026557909546b85738e')
-// 		.then((user) => {
-// 			req.user = new User(user.username, user.email, user.cart, user._id);
-// 			next();
-// 		})
-// 		.catch((err) => console.log(err));
-// });
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+	User.findById('63e27db2867f89580d025302')
+		.then((user) => {
+			req.user = user;
+			next();
+		})
+		.catch((err) => console.log(err));
+});
 
 app.use('/admin', adminRoutes.routes);
 app.use(shopRoutes);
@@ -36,9 +35,24 @@ app.use(errorController.get404);
 
 mongoose
 	.connect(process.env.MONGO_URI)
+	.then((result) => {
+		User.findOne().then((user) => {
+			if (!user) {
+				const user = new User({
+					username: 'Fahir',
+					email: 'muminovicfahir@gmail.com',
+					cart: {
+						items: [],
+					},
+				});
+				user.save();
+			}
+		});
+	})
 	.then(
 		app.listen(3000, () => {
 			console.log(`App started on http://localhost:3000/`);
 		})
 	)
 	.catch((err) => console.log(err));
+
