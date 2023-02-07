@@ -46,17 +46,12 @@ exports.getProduct = (req, res, next) => {
 exports.getCart = (req, res, next) => {
 	req.user
 		.getCart()
-		.then((cart) => {
-			cart
-				.getProducts()
-				.then((products) => {
-					res.render('shop/cart', {
-						path: '/cart',
-						pageTitle: 'Your Cart',
-						cartItems: products,
-					});
-				})
-				.catch((err) => console.log(err));
+		.then((products) => {
+			res.render('shop/cart', {
+				path: '/cart',
+				pageTitle: 'Your Cart',
+				cartItems: products,
+			});
 		})
 		.catch((err) => console.log(err));
 };
@@ -68,8 +63,8 @@ exports.postCart = (req, res, next) => {
 			return req.user.addToCart(product);
 		})
 		.then((result) => {
-			console.log(result);
-			res.redirect('/cart')
+			//console.log(result);
+			res.redirect('/cart');
 		})
 		.catch((err) => {
 			console.log(err);
