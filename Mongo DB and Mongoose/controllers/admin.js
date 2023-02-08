@@ -32,6 +32,7 @@ exports.postAddProduct = (req, res, next) => {
 		price: price,
 		imgUrl: imgUrl,
 		description: description,
+		userId: req.user,  //in mongoose it is possible to reference the whole user object, mongoose takes the id from this object 
 	});
 
 	product
