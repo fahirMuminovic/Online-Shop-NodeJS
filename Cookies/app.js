@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const User = require('./models/user');
 
+mongoose.set('strictQuery', 'false');
+
 const app = express();
 //define the default templating engine
 app.set('view engine', 'ejs');
