@@ -11,4 +11,7 @@ ServerOne.session.sql
 .vscode/settings.json
 Working With MongoDB/node_modules
 Mongo DB and Mongoose/node_modules
+Mongo DB and Mongoose/.env
 Working With MongoDB/.env
+Cookies/node_modules
+Cookies/.env
