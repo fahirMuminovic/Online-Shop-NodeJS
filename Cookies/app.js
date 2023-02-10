@@ -7,24 +7,32 @@ const mongoose = require('mongoose');
 const User = require('./models/user');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
+//disables mongoose warning about strictQuery
 mongoose.set('strictQuery', 'false');
 
+//initailize middleware
 const app = express();
 const sessionStore = new MongoDBStore({
 	uri: process.env.MONGO_URI,
 	collection: 'sessions',
 });
+const csrfProtection = csrf();
+
 //define the default templating engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
+//page not found error controller
 const errorController = require('./controllers/error');
 
+//import routes
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
+//use middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
@@ -35,7 +43,9 @@ app.use(
 		store: sessionStore,
 	})
 );
+app.use(csrfProtection); //cross site request forgery attacks
 
+//users and sessions
 app.use((req, res, next) => {
 	if (!req.session.user) {
 		return next();
@@ -48,12 +58,20 @@ app.use((req, res, next) => {
 		.catch((err) => console.log(err));
 });
 
+app.use((req, res, next) => {
+	res.locals.isAuthenticated = req.session.isLoggedIn;
+	res.locals.csrfToken = req.csrfToken();
+	next();
+});
+
+//routes
 app.use('/admin', adminRoutes.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
 app.use(errorController.get404);
 
+//DB connectiond and app startup
 mongoose
 	.connect(process.env.MONGO_URI)
 	.then((result) => {
