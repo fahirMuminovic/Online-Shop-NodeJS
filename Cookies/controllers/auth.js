@@ -12,16 +12,36 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-	User.findOne({ email: req.body.email })
+	const email = req.body.email;
+	const password = req.body.password;
+
+	User.findOne({ email: email })
 		.then((user) => {
-			req.session.isLoggedIn = true;
-			req.session.user = user;
-			req.session.save((err) => {
-				if (err) {
+			if (!user) {
+				//TODO: improve this
+				return res.redirect('/login');
+			}
+			bcrypt
+				.compare(password, user.password)
+				.then((compareResult) => {
+					if (compareResult === true) {
+						//passwords match
+						req.session.isLoggedIn = true;
+						req.session.user = user;
+						return req.session.save((err) => {
+							if (err) {
+								console.log(err);
+							}
+							res.redirect('/');
+						});
+					} else {
+						res.redirect('/login');
+					}
+				})
+				.catch((err) => {
 					console.log(err);
-				}
-				res.redirect('/');
-			});
+					res.redirect('/login');
+				});
 		})
 		.catch((err) => console.log(err));
 };
@@ -72,8 +92,8 @@ exports.postSignup = (req, res, next) => {
 exports.postLogout = (req, res, next) => {
 	req.session.destroy((err) => {
 		if (err) {
-      console.log(err);
-    }
+			console.log(err);
+		}
 		res.redirect('/');
 	});
 };
