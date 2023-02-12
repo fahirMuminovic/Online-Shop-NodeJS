@@ -8,6 +8,7 @@ const User = require('./models/user');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 //disables mongoose warning about strictQuery
 mongoose.set('strictQuery', 'false');
@@ -44,6 +45,7 @@ app.use(
 	})
 );
 app.use(csrfProtection); //cross site request forgery attacks
+app.use(flash());
 
 //users and sessions
 app.use((req, res, next) => {
