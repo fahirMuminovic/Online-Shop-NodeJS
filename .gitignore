@@ -1,17 +1,30 @@
+Creating a Node Server
+Routing Requests
+Improved Development Workflow and Debugging
 Improved Development Workflow and Debugging/node_modules
+What is Express.js
 What is Express.js/node_modules
+Working with Dynamic Content  Adding Templating Engines
 Working with Dynamic Content  Adding Templating Engines/node_modules
+Working with Dynamic Content  Adding Templating Engines - Handlebars
 Working with Dynamic Content  Adding Templating Engines - Handlebars/node_modules
+Working with Dynamic Content  Adding Templating Engines - EJS
 Working with Dynamic Content  Adding Templating Engines - EJS/node_modules
+The Model View Controller (MVC)
 The Model View Controller (MVC)/node_modules
+Enhancing the app
 Enhancing the app/node_modules
+Working with MySQL
 Working with MySQL/node_modules
 ServerOne.session.sql
 .vscode
 .vscode/settings.json
+Working With MongoDB
 Working With MongoDB/node_modules
+Mongo DB and Mongoose
 Mongo DB and Mongoose/node_modules
 Mongo DB and Mongoose/.env
 Working With MongoDB/.env
 Cookies/node_modules
 Cookies/.env
+Enhancing the app
