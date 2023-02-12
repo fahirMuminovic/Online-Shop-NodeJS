@@ -2,11 +2,7 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
 
-const checkErrMsg = (errorMessage) => {
-	if (errorMessage.length < 1) {
-		return (errorMessage = null);
-	} else return errorMessage;
-};
+const checkErrMsg = require('../util/check-error-message');
 
 exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
@@ -57,6 +53,7 @@ exports.getSignup = (req, res, next) => {
 		path: '/signup',
 		pageTitle: 'Sign Up',
 		isAuthenticated: false,
+		errorMessage: checkErrMsg(req.flash('error')),
 	});
 };
 
@@ -69,6 +66,7 @@ exports.postSignup = (req, res, next) => {
 	User.findOne({ email: email })
 		.then((userDoc) => {
 			if (userDoc) {
+				req.flash('error', 'This e-mail already exists.');
 				return res.redirect('/signup');
 			} else {
 				return bcrypt
