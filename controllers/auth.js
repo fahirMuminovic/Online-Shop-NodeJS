@@ -1,8 +1,28 @@
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 const User = require('../models/user');
-
 const checkErrMsg = require('../util/check-error-message');
+
+//email transporter using sendgrid api
+// const transporter = nodemailer.createTransport(
+// 	sendgridTransport({
+// 		auth: {
+// 			api_key:
+// 				'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',
+// 		},
+// 	})
+// );
+//email transporter using mailtrap
+var transporter = nodemailer.createTransport({
+	host: "sandbox.smtp.mailtrap.io",
+	port: 2525,
+	auth: {
+	  user: "587a39a9055ac9",
+	  pass: "4cde68cbc553ef"
+	}
+  });
 
 exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
@@ -85,6 +105,15 @@ exports.postSignup = (req, res, next) => {
 					})
 					.then((result) => {
 						res.redirect('/login');
+						return transporter.sendMail({
+							to: email,
+							from: 'node-shop@mail.com',
+							subject: 'Signup succeeded!',
+							html: '<h1>You successfully sugned up to Node Shop.</h1>',
+						});
+					})
+					.catch((err) => {
+						console.log(err);
 					});
 			}
 		})
