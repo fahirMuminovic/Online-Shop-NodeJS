@@ -22,6 +22,9 @@
 				<% if (errorMessage) {%>
 					<div class="user-message user-message--error"><%= errorMessage %></div>
 				<% } %>
+				<% if (successMessage) {%>
+					<div class="user-message user-message--success"><%= successMessage %></div>
+				<% } %>
 
 				<a class="form-control reset-password" href="/password-reset">Forgot your password? Click to reset it.</a>
 			</form>
