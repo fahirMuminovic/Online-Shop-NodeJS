@@ -1,7 +1,8 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
-	Product.find()
+	//{userId: req.user._id}
+	Product.find({ userId: req.user._id })
 		.then((products) => {
 			res.render('admin/products', {
 				prods: products,
@@ -32,7 +33,7 @@ exports.postAddProduct = (req, res, next) => {
 		price: price,
 		imgUrl: imgUrl,
 		description: description,
-		userId: req.user,  //in mongoose it is possible to reference the whole user object, mongoose takes the id from this object 
+		userId: req.user, //in mongoose it is possible to reference the whole user object, mongoose takes the id from this object
 	});
 
 	product
@@ -82,6 +83,10 @@ exports.postEditProduct = (req, res, next) => {
 
 	Product.findById(productId)
 		.then((product) => {
+			if (product.userId.toString() !== req.user._id.toString()) {
+				//TODO error handeling
+				throw new Error('Restricted Access!');
+			}
 			product.title = updatedTitle;
 			product.price = updatedPrice;
 			product.imgUrl = updatedImgUrl;
@@ -92,17 +97,21 @@ exports.postEditProduct = (req, res, next) => {
 			console.log(`DATABASE ENTRY ${productId} UPDATED SUCCESSFULLY`);
 			res.redirect('/admin/products');
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			console.log(err);
+			return res.redirect('/');
+		});
 };
 
 exports.postDeleteProduct = (req, res, next) => {
 	const productId = req.body.productId;
 
-	Product.findByIdAndRemove(productId)
-		.then(() => {
+	Product.deleteOne({ _id: productId, userId: req.user._id })
+		.then((product) => {
 			res.redirect('/admin/products');
 		})
 		.catch((err) => {
 			console.log(err);
+			res.redirect('/');
 		});
 };
