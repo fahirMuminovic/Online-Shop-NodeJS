@@ -8,23 +8,23 @@ const User = require('../models/user');
 const checkErrMsg = require('../util/check-error-message');
 
 //email transporter using sendgrid api
-// const transporter = nodemailer.createTransport(
-// 	sendgridTransport({
-// 		auth: {
-// 			api_key:
-// 				'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',
-// 		},
-// 	})
-// );
+const transporter = nodemailer.createTransport(
+	sendgridTransport({
+		auth: {
+			api_key:
+				'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',
+		},
+	})
+);
 //email transporter using mailtrap
-var transporter = nodemailer.createTransport({
-	host: 'sandbox.smtp.mailtrap.io',
-	port: 2525,
-	auth: {
-		user: '587a39a9055ac9',
-		pass: '4cde68cbc553ef',
-	},
-});
+// var transporter = nodemailer.createTransport({
+// 	host: 'sandbox.smtp.mailtrap.io',
+// 	port: 2525,
+// 	auth: {
+// 		user: '587a39a9055ac9',
+// 		pass: '4cde68cbc553ef',
+// 	},
+// });
 
 exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
@@ -84,9 +84,9 @@ exports.postSignup = (req, res, next) => {
 	const username = req.body.username;
 	const email = req.body.email;
 	const password = req.body.password;
-	const confirmPassword = req.body.confirmPassword;
-	const errors = validationResult(req);
 
+	//input validation result
+	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		console.log(errors.array());
 		return res.status(422).render('auth/signup', {
@@ -95,44 +95,38 @@ exports.postSignup = (req, res, next) => {
 			isAuthenticated: false,
 			errorMessage: errors.array()[0].msg,
 		});
+	} else {
+		//hash password
+		bcrypt
+			.hash(password, 12)
+			.then((hashedPassword) => {
+				//create user
+				const user = new User({
+					username: username,
+					email: email,
+					password: hashedPassword,
+					cart: {
+						items: [],
+					},
+				});
+				//save user to db
+				return user.save();
+			})
+			.then((result) => {
+				//redirect to login page
+				res.redirect('/login');
+				//send confirmation email
+				return transporter.sendMail({
+					to: email,
+					from: 'muminovicfahir998@gmail.com',
+					subject: 'Signup succeeded!',
+					html: '<h1>You successfully sugned up to Node Shop.</h1>',
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
-	User.findOne({ email: email })
-		.then((userDoc) => {
-			if (userDoc) {
-				req.flash('error', 'This e-mail already exists.');
-				return res.redirect('/signup');
-			} else {
-				return bcrypt
-					.hash(password, 12)
-					.then((hashedPassword) => {
-						const user = new User({
-							username: username,
-							email: email,
-							password: hashedPassword,
-							cart: {
-								items: [],
-							},
-						});
-
-						return user.save();
-					})
-					.then((result) => {
-						res.redirect('/login');
-						return transporter.sendMail({
-							to: email,
-							from: 'node-shop@mail.com',
-							subject: 'Signup succeeded!',
-							html: '<h1>You successfully sugned up to Node Shop.</h1>',
-						});
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-			}
-		})
-		.catch((err) => {
-			console.log(err);
-		});
 };
 
 exports.postLogout = (req, res, next) => {
@@ -201,7 +195,7 @@ exports.postPasswordReset = (req, res, next) => {
 				//send email
 				transporter.sendMail({
 					to: req.body.email,
-					from: 'node-shop@mail.com',
+					from: 'muminovicfahir998@gmail.com',
 					subject: 'Password Reset',
 					html: `
 						<p>You requested a password reset</p>

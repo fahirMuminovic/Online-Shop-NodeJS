@@ -2,6 +2,7 @@ const express = require('express');
 const { check, body } = require('express-validator');
 
 const authController = require('../controllers/auth');
+const User = require('../models/user');
 
 const router = express.Router();
 
@@ -16,11 +17,26 @@ router.post(
 	[
 		body('email')
 			.isEmail()
-			.withMessage('The entered e-mail is not valid!'),
+			.withMessage('The entered e-mail is not valid!')
+			.custom((value) => {
+				//if user already exists in the database
+				return User.findOne({ email: value }).then((userDoc) => {
+					if (userDoc) {
+						return Promise.reject('This e-mail already exists.');
+					}
+				});
+			}),
 
 		body('password')
 			.isLength({ min: 6 })
 			.withMessage('Password must contain at least 6 characters'),
+
+		body('confirmPassword').custom((value, { req }) => {
+			if (value !== req.body.password) {
+				throw new Error('Passwords do not match!');
+			}
+			return true;
+		}),
 	],
 	authController.postSignup
 );
