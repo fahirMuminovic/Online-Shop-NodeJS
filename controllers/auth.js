@@ -33,6 +33,13 @@ exports.getLogin = (req, res, next) => {
 		pageTitle: 'Login',
 		errorMessage: checkErrMsg(req.flash('error')),
 		successMessage: checkErrMsg(req.flash('success')),
+		previousInputs: {
+			username: '',
+			email: '',
+			password: '',
+			confirmPassword: '',
+		},
+		validationErrors: [],
 	});
 };
 
@@ -43,41 +50,54 @@ exports.postLogin = (req, res, next) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		console.log(errors.array());
-		return res.status(422).render('auth/signup', {
-			path: '/signup',
-			pageTitle: 'Sign Up',
+		return res.status(422).render('auth/login', {
+			path: '/login',
+			pageTitle: 'Login',
 			isAuthenticated: false,
 			errorMessage: errors.array()[0].msg,
+			successMessage: checkErrMsg(req.flash('success')),
 			previousInputs: {
-				username,
-				email,
-				password,
-				confirmPassword: req.body.confirmPassword,
+				email: email,
+				password: password,
 			},
+			validationErrors: errors.array(),
 		});
 	} else {
-		bcrypt
-			.compare(password, user.password)
-			.then((compareResult) => {
-				if (compareResult === true) {
-					//passwords match
-					req.session.isLoggedIn = true;
-					req.session.user = user;
-					return req.session.save((err) => {
-						if (err) {
-							console.log(err);
-						}
-						res.redirect('/');
-					});
-				} else {
-					req.flash('error', 'Invalid e-mail or password.');
+		User.findOne({ email: email }).then((user) => {
+			bcrypt
+				.compare(password, user.password)
+				.then((compareResult) => {
+					if (compareResult === true) {
+						//passwords match
+						req.session.isLoggedIn = true;
+						req.session.user = user;
+						return req.session.save((err) => {
+							if (err) {
+								console.log(err);
+							}
+							req.flash('success', 'Successfully loged in!');
+							res.redirect('/');
+						});
+					} else {
+						return res.status(422).render('auth/login', {
+							path: '/login',
+							pageTitle: 'Login',
+							isAuthenticated: false,
+							errorMessage: 'Wrong email or password',
+							successMessage: checkErrMsg(req.flash('success')),
+							previousInputs: {
+								email: email,
+								password: password,
+							},
+							validationErrors: errors.array(),
+						});
+					}
+				})
+				.catch((err) => {
+					console.log(err);
 					res.redirect('/login');
-				}
-			})
-			.catch((err) => {
-				console.log(err);
-				res.redirect('/login');
-			});
+				});
+		});
 	}
 };
 

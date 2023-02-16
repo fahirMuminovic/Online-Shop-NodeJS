@@ -20,15 +20,15 @@ router.post(
 						return Promise.reject(
 							'No user registered with this email exists.'
 						);
-					}else{
+					} else {
 						return user;
 					}
 				});
 			}),
 
-		body('password')
-			.isLength({ min: 6 })
-			.withMessage('Password must contain at least 6 characters'),
+		body('password', 'Password must contain at least 6 characters')
+			.notEmpty()
+			.isLength({ min: 6 }),
 	],
 	authController.postLogin
 );
