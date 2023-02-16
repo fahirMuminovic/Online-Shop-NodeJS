@@ -25,3 +25,7 @@
 .form-control.reset-password {
   display: block;
 }
+
+.form-control input.invalid {
+  border-color: red;
+}

@@ -8,7 +8,30 @@ const router = express.Router();
 
 router.get('/login', authController.getLogin);
 
-router.post('/login', authController.postLogin);
+router.post(
+	'/login',
+	[
+		body('email')
+			.isEmail()
+			.withMessage('The entered e-mail is not valid!')
+			.custom((value) => {
+				return User.findOne({ email: value }).then((user) => {
+					if (!user) {
+						return Promise.reject(
+							'No user registered with this email exists.'
+						);
+					}else{
+						return user;
+					}
+				});
+			}),
+
+		body('password')
+			.isLength({ min: 6 })
+			.withMessage('Password must contain at least 6 characters'),
+	],
+	authController.postLogin
+);
 
 router.get('/signup', authController.getSignup);
 

@@ -45,21 +45,23 @@ app.use(
 	})
 );
 app.use(csrfProtection); //cross site request forgery attacks
-app.use(flash());
+app.use(flash()); //error messagess in req.body/sessions
 
 //users and sessions
 app.use((req, res, next) => {
 	if (!req.session.user) {
 		return next();
+	} else {
+		User.findById(req.session.user._id)
+			.then((user) => {
+				req.user = user;
+				next();
+			})
+			.catch((err) => console.log(err));
 	}
-	User.findById(req.session.user._id)
-		.then((user) => {
-			req.user = user;
-			next();
-		})
-		.catch((err) => console.log(err));
 });
 
+//authentication and tokens
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isLoggedIn;
 	res.locals.csrfToken = req.csrfToken();
