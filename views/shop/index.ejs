@@ -6,9 +6,7 @@
     <%- include('../includes/navigation.ejs') %>
 
       <main>
-        <% if (successMessage) {%>
-          <div class="user-message user-message--success"><%= successMessage %></div>
-        <% } %>
+        
         <% if(prods.length>0) { %>
           <div class="grid">
             <% prods.forEach(product=> { %>
