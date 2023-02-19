@@ -8,25 +8,77 @@
 
       <main>
           <form class="product-form" action="/admin/<% if(editMode) { %>edit-product<% } else { %>add-product<% } %>"
-            method="POST">
+            method="POST" novalidate>
 
               <div class="form-control">
                   <label for="title">Title</label>
-                  <input type="text" name="title" id="title" value="<% if(editMode || inputErrors) {%><%=product.title%><% }%>">
+                  <input 
+                    class="<%= validationErrors.find(err => err.param === 'title') ? 'invalid' : '' %>"
+                    type="text" 
+                    name="title" 
+                    id="title"
+                    value="<% if(editMode || validationErrors.length > 0) {%><%=product.title%><% }%>"
+                  />
+                  <% if (errorMessages) { %>  
+                      <% errorMessages.forEach(errorMessage => { %>
+                            <% if(errorMessage.input === 'title') {%>
+                              <small class="error"><%= errorMessage.msg %></small>
+                            <% } %>
+                      <% }) %>
+                  <% } %>
               </div>
               <div class="form-control">
                   <label for="imgUrl">Image URL</label>
-                  <input type="text" name="imgUrl" id="imgUrl" value="<% if(editMode || inputErrors) {%><%=product.imgUrl%><% }%>">
+                  <input 
+                    class="<%= validationErrors.find(err => err.param === 'imgUrl') ? 'invalid' : '' %>"
+                    type="text" 
+                    name="imgUrl" 
+                    id="imgUrl" 
+                    value="<% if(editMode || validationErrors.length > 0) {%><%=product.imgUrl%><% }%>"
+                  />
+                  <% if (errorMessages) { %>  
+                    <% errorMessages.forEach(errorMessage => { %>
+                          <% if(errorMessage.input === 'imgUrl') {%>
+                            <small class="error"><%= errorMessage.msg %></small>
+                          <% } %>
+                    <% }) %>
+                <% } %>
               </div>
               <div class="form-control">
                   <label for="price">Price</label>
-                  <input type="number" name="price" id="price" step="0.01"
-                    value="<% if(editMode || inputErrors) {%><%=product.price%><% }%>">
+                  <input 
+                    class="<%= validationErrors.find(err => err.param === 'price') ? 'invalid' : '' %>"
+                    type="number" 
+                    name="price" 
+                    id="price" 
+                    step="0.01"
+                    value="<% if(editMode || validationErrors.length > 0) {%><%=product.price%><% }%>"
+                  />
+                  <% if (errorMessages) { %>  
+                    <% errorMessages.forEach(errorMessage => { %>
+                          <% if(errorMessage.input === 'price') {%>
+                            <small class="error"><%= errorMessage.msg %></small>
+                          <% } %>
+                    <% }) %>
+                <% } %>
               </div>
               <div class="form-control">
                   <label for="description">Description</label>
-                  <textarea name="description" id="description" cols="30" rows="5"
-                    placeholder="Enter a description"><% if(editMode || inputErrors) {%><%=product.description%><% }%></textarea>
+                  <textarea 
+                    class="<%= validationErrors.find(err => err.param === 'description') ? 'invalid' : '' %>"
+                    name="description" 
+                    id="description" 
+                    cols="30" 
+                    rows="5"
+                    placeholder="Enter a description"><% if(editMode || validationErrors.length > 0){%><%=product.description%><%}%>
+                  </textarea>
+                  <% if (errorMessages) { %>  
+                    <% errorMessages.forEach(errorMessage => { %>
+                          <% if(errorMessage.input === 'description') {%>
+                            <small class="error"><%= errorMessage.msg %></small>
+                          <% } %>
+                    <% }) %>
+                <% } %>
               </div>
 
               <% if(editMode) { %>
