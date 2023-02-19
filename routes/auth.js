@@ -1,5 +1,5 @@
 const express = require('express');
-const { check, body } = require('express-validator');
+const { body } = require('express-validator');
 
 const authController = require('../controllers/auth');
 const User = require('../models/user');
@@ -16,6 +16,7 @@ router.post(
 		body('email')
 			.isEmail()
 			.withMessage('The entered e-mail is not valid!')
+			.normalizeEmail()
 			.custom((value) => {
 				return User.findOne({ email: value }).then((user) => {
 					if (!user) {
@@ -27,8 +28,7 @@ router.post(
 					}
 				});
 			})
-			.trim()
-			.normalizeEmail(),
+			.trim(),
 
 		body('password', 'Password must contain at least 6 characters')
 			.notEmpty()
@@ -46,6 +46,7 @@ router.post(
 		body('email')
 			.isEmail()
 			.withMessage('The entered e-mail is not valid!')
+			.normalizeEmail()
 			.custom((value) => {
 				//if user already exists in the database
 				return User.findOne({ email: value }).then((userDoc) => {
@@ -54,8 +55,7 @@ router.post(
 					}
 				});
 			})
-			.trim()
-			.normalizeEmail(),
+			.trim(),
 
 		body('password')
 			.isLength({ min: 6 })

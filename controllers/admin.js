@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const { validationResult } = require('express-validator');
 
 exports.getProducts = (req, res, next) => {
 	//{userId: req.user._id}
@@ -26,6 +27,23 @@ exports.postAddProduct = (req, res, next) => {
 	const imgUrl = req.body.imgUrl;
 	const price = req.body.price;
 	const description = req.body.description;
+	const errors = validationResult(req);
+
+	if (!errors.isEmpty()) {
+		return res.status(422).render('admin/edit-product', {
+			pageTitle: 'Add Product',
+			path: '/admin/add-product',
+			editMode: false,
+			errorMessage: errors.array()[0].msg,
+			inputErrors: true,
+			product: {
+				title: title,
+				imgUrl: imgUrl,
+				price: price,
+				description: description,
+			},
+		});
+	}
 
 	//constructor(title, price, imgUrl, description) {
 	const product = new Product({
