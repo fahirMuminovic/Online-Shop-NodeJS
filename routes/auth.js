@@ -3,13 +3,15 @@ const { check, body } = require('express-validator');
 
 const authController = require('../controllers/auth');
 const User = require('../models/user');
+const isLoggedIn = require('../middleware/is-loggedIn');
 
 const router = express.Router();
 
-router.get('/login', authController.getLogin);
+router.get('/login', isLoggedIn, authController.getLogin);
 
 router.post(
 	'/login',
+	isLoggedIn,
 	[
 		body('email')
 			.isEmail()
@@ -33,7 +35,7 @@ router.post(
 	authController.postLogin
 );
 
-router.get('/signup', authController.getSignup);
+router.get('/signup', isLoggedIn, authController.getSignup);
 
 router.post(
 	'/signup',
@@ -61,17 +63,18 @@ router.post(
 			return true;
 		}),
 	],
+	isLoggedIn,
 	authController.postSignup
 );
 
 router.post('/logout', authController.postLogout);
 
-router.get('/password-reset', authController.getPasswordReset);
+router.get('/password-reset', isLoggedIn, authController.getPasswordReset);
 
-router.post('/password-reset', authController.postPasswordReset);
+router.post('/password-reset', isLoggedIn, authController.postPasswordReset);
 
-router.get('/password-reset/:token', authController.getNewPassword);
+router.get('/password-reset/:token', isLoggedIn, authController.getNewPassword);
 
-router.post('/new-password', authController.postNewPassword);
+router.post('/new-password', isLoggedIn, authController.postNewPassword);
 
 module.exports = router;
