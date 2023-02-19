@@ -26,11 +26,14 @@ router.post(
 						return user;
 					}
 				});
-			}),
+			})
+			.trim()
+			.normalizeEmail(),
 
 		body('password', 'Password must contain at least 6 characters')
 			.notEmpty()
-			.isLength({ min: 6 }),
+			.isLength({ min: 6 })
+			.trim(),
 	],
 	authController.postLogin
 );
@@ -50,18 +53,23 @@ router.post(
 						return Promise.reject('This e-mail already exists.');
 					}
 				});
-			}),
+			})
+			.trim()
+			.normalizeEmail(),
 
 		body('password')
 			.isLength({ min: 6 })
-			.withMessage('Password must contain at least 6 characters'),
+			.withMessage('Password must contain at least 6 characters')
+			.trim(),
 
-		body('confirmPassword').custom((value, { req }) => {
-			if (value !== req.body.password) {
-				throw new Error('Passwords do not match!');
-			}
-			return true;
-		}),
+		body('confirmPassword')
+			.trim()
+			.custom((value, { req }) => {
+				if (value !== req.body.password) {
+					throw new Error('Passwords do not match!');
+				}
+				return true;
+			}),
 	],
 	isLoggedIn,
 	authController.postSignup
