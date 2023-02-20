@@ -33,6 +33,7 @@ router.post(
 		body('password')
 			.trim()
 			.notEmpty()
+			.withMessage('Please enter your password')
 			.isLength({ min: 6 })
 			.withMessage('Password must contain at least 6 characters')
 			.custom((value, { req }) => {
@@ -40,20 +41,20 @@ router.post(
 					User.findOne({ email: req.body.email })
 						.then((user) => {
 							if (!user) {
-								reject();
+								throw new Error('No user found!');
+							} else {
+								bcrypt
+									.compare(value, user.password)
+									.then((compareResult) => {
+										if (compareResult === false) {
+											return reject('Wrong password!')
+										} else {
+											return resolve(true);
+										}
+									});
 							}
-
-							bcrypt
-								.compare(value, user.password)
-								.then((compareResult) => {
-									if (compareResult === false) {
-										reject('Wrong password!');
-									} else {
-										resolve(true);
-									}
-								});
 						})
-						.catch((err) => console.log(err));
+						.catch((err) => reject(err));
 				});
 			}),
 	],
@@ -79,6 +80,25 @@ router.post(
 			})
 			.trim(),
 
+		body('username')
+			.notEmpty()
+			.withMessage("Username can't be empty")
+			.isAlphanumeric()
+			.withMessage('Only letters and numbers are allowed')
+			.trim()
+			.custom((value) => {
+				User.findOne({ username: value })
+					.then((user) => {
+						if (user) {
+							throw new Error('This username is taken.')
+						}
+						return true;
+					})
+					.catch((err) => {
+						return Promise.reject(err);
+					});
+			}),
+
 		body('password')
 			.isLength({ min: 6 })
 			.withMessage('Password must contain at least 6 characters')
@@ -86,6 +106,8 @@ router.post(
 
 		body('confirmPassword')
 			.trim()
+			.notEmpty()
+			.withMessage('Please confirm your password')
 			.custom((value, { req }) => {
 				if (value !== req.body.password) {
 					throw new Error('Passwords do not match!');

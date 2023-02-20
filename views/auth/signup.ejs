@@ -17,14 +17,32 @@
 				id="email" 
 				value="<%= previousInputs.email %>"
 			/>
+			<% if (validationErrorMessages) { %>
+				<% validationErrorMessages.forEach(validationErrorMessage => { %>
+					<% if(validationErrorMessage.input === 'email') {%>
+						<small class="error"><%= validationErrorMessage.msg %></small>
+						<% return %>
+					<% } %>
+				<% }) %>
+			<% } %>
 		</div>
 		<div class="form-control">
 			<label for="username">Username</label>
-			<input 
+			<input
+				class="<%= validationErrors.find(err => err.param === 'username') ? 'invalid' : '' %>" 
 				type="text" 
 				name="username" 
 				id="username" 
-				value="<%= previousInputs.username %>">
+				value="<%= previousInputs.username %>"
+			/>
+			<% if (validationErrorMessages) { %>
+				<% validationErrorMessages.forEach(validationErrorMessage => { %>
+					<% if(validationErrorMessage.input === 'username') {%>
+						<small class="error"><%= validationErrorMessage.msg %></small>
+						<% return %>
+					<% } %>
+				<% }) %>
+			<% } %>
 		</div>
 		<div class="form-control">
 			<label for="password">Password</label>
@@ -33,7 +51,16 @@
 				type="password" 
 				name="password" 
 				id="password" 
-				value="<%= previousInputs.password %>">
+				value="<%= previousInputs.password %>"
+			/>
+			<% if (validationErrorMessages) { %>
+				<% validationErrorMessages.forEach(validationErrorMessage => { %>
+					<% if(validationErrorMessage.input === 'password') {%>
+						<small class="error"><%= validationErrorMessage.msg %></small>
+						<% return %>
+					<% } %>
+				<% }) %>
+			<% } %>
 		</div>
 		<div class="form-control">
 			<label for="confirmPassword">Confirm Password</label>
@@ -42,16 +69,21 @@
 				type="password"
 				name="confirmPassword" 
 				id="confirmPassword" 
-				value="<%= previousInputs.confirmPassword %>">
+				value="<%= previousInputs.confirmPassword %>"
+			/>
+			<% if (validationErrorMessages) { %>
+				<% validationErrorMessages.forEach(validationErrorMessage => { %>
+					<% if(validationErrorMessage.input === 'confirmPassword') {%>
+						<small class="error"><%= validationErrorMessage.msg %></small>
+						<% return %>
+					<% } %>
+				<% }) %>
+			<% } %>
 		</div>
 
 		<input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
 		<button class="btn" type="submit">Signup</button>
-
-		<% if (errorMessage) {%>
-			<div class="user-message user-message--error"><%= errorMessage %></div>
-		<% } %>
 	</form>
 </main>
 

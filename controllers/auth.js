@@ -70,14 +70,14 @@ exports.getSignup = (req, res, next) => {
 		path: '/signup',
 		pageTitle: 'Sign Up',
 		isAuthenticated: false,
-		errorMessage: checkForFlashErrors(req.flash('error')),
+		validationErrors: [],
+		validationErrorMessages: [],
 		previousInputs: {
 			username: '',
 			email: '',
 			password: '',
 			confirmPassword: '',
 		},
-		validationErrors: [],
 	});
 };
 
@@ -85,22 +85,23 @@ exports.postSignup = (req, res, next) => {
 	const username = req.body.username;
 	const email = req.body.email;
 	const password = req.body.password;
+	const confirmPassword = req.body.confirmPassword;
 
 	//input validation result
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
+	const formErrors = validationResult(req);
+	if (!formErrors.isEmpty()) {
 		return res.status(422).render('auth/signup', {
 			path: '/signup',
 			pageTitle: 'Sign Up',
 			isAuthenticated: false,
-			errorMessage: errors.array()[0].msg,
+			validationErrors: formErrors.array(),
+			validationErrorMessages: getFlashErrorMessage(formErrors.array()),
 			previousInputs: {
-				username,
-				email,
-				password,
-				confirmPassword: req.body.confirmPassword,
+				username: username,
+				email: email,
+				password: password,
+				confirmPassword: confirmPassword,
 			},
-			validationErrors: errors.array(),
 		});
 	} else {
 		//hash password
