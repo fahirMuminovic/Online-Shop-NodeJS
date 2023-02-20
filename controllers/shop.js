@@ -1,6 +1,6 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
-const checkErrMsg = require('../util/check-error-message');
+const checkForFlashErrors = require('../util/checkForFlashErrors');
 
 exports.getIndex = (req, res, next) => {
 	Product.find()
@@ -9,7 +9,7 @@ exports.getIndex = (req, res, next) => {
 				prods: products,
 				pageTitle: 'Shop',
 				path: '/',
-				successMessage: checkErrMsg(req.flash('success')),
+				successMessage: checkForFlashErrors(req.flash('success')),
 			});
 		})
 		.catch((err) => {

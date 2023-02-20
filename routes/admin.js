@@ -2,13 +2,13 @@ const express = require('express');
 const { body } = require('express-validator');
 
 const adminController = require('../controllers/admin');
-const isAuth = require('../middleware/is-auth');
+const isNotLoggedIn = require('../middleware/isNotLoggedIn');
 
 const router = express.Router();
 
-router.get('/products', isAuth, adminController.getProducts);
+router.get('/products', isNotLoggedIn, adminController.getProducts);
 
-router.get('/add-product', isAuth, adminController.getAddProduct);
+router.get('/add-product', isNotLoggedIn, adminController.getAddProduct);
 
 router.post(
 	'/add-product',
@@ -18,11 +18,11 @@ router.post(
 		body('price').isFloat().withMessage('Not a valid price!'),
 		body('description').isLength({ min: 5 }).withMessage('Must be at least 5 letters long').trim(),
 	],
-	isAuth,
+	isNotLoggedIn,
 	adminController.postAddProduct
 );
 
-router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
+router.get('/edit-product/:productId', isNotLoggedIn, adminController.getEditProduct);
 
 router.post(
 	'/edit-product',
@@ -32,10 +32,10 @@ router.post(
 		body('price').isFloat().withMessage('Not a valid price!'),
 		body('description').isLength({ min: 5 }).withMessage('Must be at least 5 letters long').trim(),
 	],
-	isAuth,
+	isNotLoggedIn,
 	adminController.postEditProduct
 );
 
-router.post('/delete-product', isAuth, adminController.postDeleteProduct);
+router.post('/delete-product', isNotLoggedIn, adminController.postDeleteProduct);
 
 exports.routes = router;

@@ -1,21 +1,11 @@
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
 const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
-const checkErrMsg = require('../util/check-error-message');
+const checkErrMsg = require('../util/checkForFlashErrors');
 
-//email transporter using sendgrid api
-// const transporter = nodemailer.createTransport(
-// 	sendgridTransport({
-// 		auth: {
-// 			api_key:
-// 				'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',
-// 		},
-// 	})
-// );
 
 // email transporter using mailtrap
 var transporter = nodemailer.createTransport({

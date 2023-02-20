@@ -1,9 +1,8 @@
 const Product = require('../models/product');
-const getErrorMessages = require('../util/get-error-messages');
+const getFlashErrorMessages = require('../util/getFlashErrorMessage');
 const { validationResult } = require('express-validator');
 
 exports.getProducts = (req, res, next) => {
-	//{userId: req.user._id}
 	Product.find({ userId: req.user._id })
 		.then((products) => {
 			res.render('admin/products', {
@@ -37,7 +36,7 @@ exports.postAddProduct = (req, res, next) => {
 			pageTitle: 'Add Product',
 			path: '/admin/add-product',
 			editMode: false,
-			errorMessages: getErrorMessages(errors.array()),
+			errorMessages: getFlashErrorMessages(errors.array()),
 			validationErrors: errors.array(),
 			product: {
 				title: title,
@@ -111,7 +110,7 @@ exports.postEditProduct = (req, res, next) => {
 			pageTitle: 'Edit Product',
 			path: '/admin/edit-product',
 			editMode: true,
-			errorMessages: getErrorMessages(errors.array()),
+			errorMessages: getFlashErrorMessages(errors.array()),
 			validationErrors: errors.array(),
 			product: {
 				title: updatedTitle,
