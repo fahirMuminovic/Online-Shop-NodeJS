@@ -21,15 +21,10 @@ exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
 		path: '/login',
 		pageTitle: 'Login',
-		errorMessage: checkErrMsg(req.flash('error')),
-		successMessage: checkErrMsg(req.flash('success')),
-		previousInputs: {
-			username: '',
-			email: '',
-			password: '',
-			confirmPassword: '',
-		},
+		isAuthenticated: false,
 		validationErrors: [],
+		validationErrorMessages: [],
+		previousInputs: {},
 	});
 };
 
@@ -37,58 +32,36 @@ exports.postLogin = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
 
-	const errors = validationResult(req);
-
-	if (!errors.isEmpty()) {
-		console.log(errors.array());
+	const formErrors = validationResult(req);
+	if (!formErrors.isEmpty()) {
 		return res.status(422).render('auth/login', {
 			path: '/login',
 			pageTitle: 'Login',
 			isAuthenticated: false,
-			errorMessage: errors.array()[0].msg,
-			successMessage: checkErrMsg(req.flash('success')),
+			validationErrors: formErrors.array(),
+			validationErrorMessages: getFlashErrorMessage(formErrors.array()),
 			previousInputs: {
 				email: email,
 				password: password,
 			},
-			validationErrors: errors.array(),
 		});
 	} else {
-		User.findOne({ email: email }).then((user) => {
-			bcrypt
-				.compare(password, user.password)
-				.then((compareResult) => {
-					if (compareResult === true) {
-						//passwords match
-						req.session.isLoggedIn = true;
-						req.session.user = user;
-						return req.session.save((err) => {
-							if (err) {
-								console.log(err);
-							}
-							req.flash('success', 'Successfully loged in!');
-							res.redirect('/');
-						});
-					} else {
-						return res.status(422).render('auth/login', {
-							path: '/login',
-							pageTitle: 'Login',
-							isAuthenticated: false,
-							errorMessage: 'Wrong email or password',
-							successMessage: checkErrMsg(req.flash('success')),
-							previousInputs: {
-								email: email,
-								password: password,
-							},
-							validationErrors: errors.array(),
-						});
+		User.findOne({ email: email })
+			.then((user) => {
+				req.session.isLoggedIn = true;
+				req.session.user = user;
+				return req.session.save((err) => {
+					if (err) {
+						console.log(err);
 					}
-				})
-				.catch((err) => {
-					console.log(err);
-					res.redirect('/login');
+					req.flash('success', 'Successfully loged in!');
+					res.redirect('/');
 				});
-		});
+			})
+			.catch((err) => {
+				console.log(err);
+				res.redirect('/login');
+			});
 	}
 };
 
@@ -261,8 +234,6 @@ exports.postNewPassword = (req, res, next) => {
 		return res.status(422).render('auth/new-password', {
 			path: '/new-password',
 			pageTitle: 'Reset Password',
-			errorMessage: checkErrMsg(req.flash('error')),
-			successMessage: checkErrMsg(req.flash('success')),
 			userId: userId,
 			passwordToken: passwordToken,
 			validationErrors: formErrors.array(),

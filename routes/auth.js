@@ -1,5 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
+const bcrypt = require('bcryptjs');
 
 const authController = require('../controllers/auth');
 const User = require('../models/user');
@@ -17,23 +18,44 @@ router.post(
 			.isEmail()
 			.withMessage('The entered e-mail is not valid!')
 			.normalizeEmail()
+			.trim()
 			.custom((value) => {
 				return User.findOne({ email: value }).then((user) => {
 					if (!user) {
 						return Promise.reject(
-							'No user registered with this email exists.'
+							'No user with this e-mail exists!'
 						);
-					} else {
-						return user;
 					}
+					return Promise.resolve(true);
 				});
-			})
-			.trim(),
+			}),
 
-		body('password', 'Password must contain at least 6 characters')
+		body('password')
+			.trim()
 			.notEmpty()
 			.isLength({ min: 6 })
-			.trim(),
+			.withMessage('Password must contain at least 6 characters')
+			.custom((value, { req }) => {
+				return new Promise((resolve, reject) => {
+					User.findOne({ email: req.body.email })
+						.then((user) => {
+							if (!user) {
+								reject();
+							}
+
+							bcrypt
+								.compare(value, user.password)
+								.then((compareResult) => {
+									if (compareResult === false) {
+										reject('Wrong password!');
+									} else {
+										resolve(true);
+									}
+								});
+						})
+						.catch((err) => console.log(err));
+				});
+			}),
 	],
 	authController.postLogin
 );
@@ -77,7 +99,28 @@ router.post(
 
 router.post('/logout', authController.postLogout);
 
-router.get('/password-reset', isLoggedIn, authController.getPasswordReset);
+router.get(
+	'/password-reset',
+	[
+		body('email')
+			.isEmail()
+			.withMessage('The entered e-mail is not valid!')
+			.normalizeEmail()
+			.trim()
+			.custom((value) => {
+				return User.findOne({ email: value }).then((user) => {
+					if (!user) {
+						return Promise.reject(
+							'No user with this e-mail exists!'
+						);
+					}
+					return Promise.resolve(true);
+				});
+			}),
+	],
+	isLoggedIn,
+	authController.getPasswordReset
+);
 
 router.post(
 	'/password-reset',
@@ -107,9 +150,9 @@ router.post(
 	[
 		body('password')
 			.trim()
-			.custom((value, {req}) =>{
+			.custom((value, { req }) => {
 				if (value.length === 0) {
-					throw new Error('Field is empty!')
+					throw new Error('Field is empty!');
 				}
 				return true;
 			})
@@ -119,9 +162,9 @@ router.post(
 
 		body('confirmPassword')
 			.trim()
-			.custom((value, {req}) =>{
+			.custom((value, { req }) => {
 				if (value.length === 0) {
-					throw new Error('Field is empty!')
+					throw new Error('Field is empty!');
 				}
 				return true;
 			})
