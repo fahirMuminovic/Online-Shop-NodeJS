@@ -5,7 +5,7 @@ const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 const checkErrMsg = require('../util/checkForFlashErrors');
-
+const getFlashErrorMessage = require('../util/getFlashErrorMessage');
 
 // email transporter using mailtrap
 var transporter = nodemailer.createTransport({
@@ -38,7 +38,7 @@ exports.postLogin = (req, res, next) => {
 	const password = req.body.password;
 
 	const errors = validationResult(req);
-	
+
 	if (!errors.isEmpty()) {
 		console.log(errors.array());
 		return res.status(422).render('auth/login', {
@@ -181,27 +181,6 @@ exports.getPasswordReset = (req, res, next) => {
 	});
 };
 
-exports.getNewPassword = (req, res, next) => {
-	const token = req.params.token;
-	User.findOne({
-		resetToken: token,
-		resetTokenExpiration: { $gt: Date.now() },
-	})
-		.then((user) => {
-			res.render('auth/new-password', {
-				path: '/new-password',
-				pageTitle: 'Reset Password',
-				errorMessage: checkErrMsg(req.flash('error')),
-				successMessage: checkErrMsg(req.flash('success')),
-				userId: user._id.toString(),
-				passwordToken: token,
-			});
-		})
-		.catch((err) => {
-			console.log(err);
-		});
-};
-
 exports.postPasswordReset = (req, res, next) => {
 	crypto.randomBytes(32, (err, buffer) => {
 		if (err) {
@@ -246,6 +225,30 @@ exports.postPasswordReset = (req, res, next) => {
 	});
 };
 
+exports.getNewPassword = (req, res, next) => {
+	const token = req.params.token;
+	User.findOne({
+		resetToken: token,
+		resetTokenExpiration: { $gt: Date.now() },
+	})
+		.then((user) => {
+			res.render('auth/new-password', {
+				path: '/new-password',
+				pageTitle: 'Reset Password',
+				errorMessage: checkErrMsg(req.flash('error')),
+				successMessage: checkErrMsg(req.flash('success')),
+				userId: user._id.toString(),
+				passwordToken: token,
+				validationErrors: [],
+				validationErrorMessages: [],
+				previousInputs: {},
+			});
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+};
+
 exports.postNewPassword = (req, res, next) => {
 	const userId = req.body.userId;
 	const newPassword = req.body.password;
@@ -253,43 +256,54 @@ exports.postNewPassword = (req, res, next) => {
 	const passwordToken = req.body.passwordToken;
 	let resetUser;
 
-	//TODO: check if entered passwords match
-	if (newPassword !== confirmNewPassword) {
-		req.flash('error', 'Passwords do not match!');
-		res.redirect('back');
-		//throw new Error('Passwords do not match!');
-	} else {
-		User.findOne({
-			_id: userId,
-			resetToken: passwordToken,
-			resetTokenExpiration: { $gt: Date.now() },
-		})
-			.then((user) => {
-				if (!user) {
-					throw new Error('Something went wrong please try again!');
-				}
-				resetUser = user;
-				return bcrypt.hash(newPassword, 12);
-			})
-			.then((hashedPassword) => {
-				//update password for user
-				resetUser.password = hashedPassword;
-				//delete password reset token for user
-				resetUser.resetToken = undefined;
-				resetUser.resetTokenExpiration = undefined;
-				return resetUser.save();
-			})
-			.then((result) => {
-				req.flash(
-					'success',
-					'Password has been successfully reset. Please login.'
-				);
-				res.redirect('/login');
-			})
-			.catch((err) => {
-				//console.log(err);
-				req.flash('error', err.message);
-				res.redirect('back');
-			});
+	const formErrors = validationResult(req);
+	if (!formErrors.isEmpty()) {
+		return res.status(422).render('auth/new-password', {
+			path: '/new-password',
+			pageTitle: 'Reset Password',
+			errorMessage: checkErrMsg(req.flash('error')),
+			successMessage: checkErrMsg(req.flash('success')),
+			userId: userId,
+			passwordToken: passwordToken,
+			validationErrors: formErrors.array(),
+			validationErrorMessages: getFlashErrorMessage(formErrors.array()),
+			previousInputs: {
+				newPassword: newPassword,
+				confirmNewPassword: confirmNewPassword,
+			},
+		});
 	}
+
+	User.findOne({
+		_id: userId,
+		resetToken: passwordToken,
+		resetTokenExpiration: { $gt: Date.now() },
+	})
+		.then((user) => {
+			if (!user) {
+				throw new Error('Something went wrong please try again!');
+			}
+			resetUser = user;
+			return bcrypt.hash(newPassword, 12);
+		})
+		.then((hashedPassword) => {
+			//update password for user
+			resetUser.password = hashedPassword;
+			//delete password reset token for user
+			resetUser.resetToken = undefined;
+			resetUser.resetTokenExpiration = undefined;
+			return resetUser.save();
+		})
+		.then((result) => {
+			req.flash(
+				'success',
+				'Password has been successfully reset. Please login.'
+			);
+			res.redirect('/login');
+		})
+		.catch((err) => {
+			//console.log(err);
+			req.flash('error', err.message);
+			res.redirect('back');
+		});
 };
