@@ -4,7 +4,7 @@ const nodemailer = require('nodemailer');
 const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
-const checkErrMsg = require('../util/checkForFlashErrors');
+const checkForFlashErrors = require('../util/checkForFlashErrors');
 const getFlashErrorMessage = require('../util/getFlashErrorMessage');
 
 // email transporter using mailtrap
@@ -70,7 +70,7 @@ exports.getSignup = (req, res, next) => {
 		path: '/signup',
 		pageTitle: 'Sign Up',
 		isAuthenticated: false,
-		errorMessage: checkErrMsg(req.flash('error')),
+		errorMessage: checkForFlashErrors(req.flash('error')),
 		previousInputs: {
 			username: '',
 			email: '',
@@ -149,19 +149,37 @@ exports.getPasswordReset = (req, res, next) => {
 	res.render('auth/password-reset', {
 		path: '/password-reset',
 		pageTitle: 'Reset Password',
-		errorMessage: checkErrMsg(req.flash('error')),
-		successMessage: checkErrMsg(req.flash('success')),
+		successMessage: checkForFlashErrors(req.flash('success')),
+		validationErrors: [],
+		validationErrorMessages: [],
+		previousInputs: { email: '' },
 	});
 };
 
 exports.postPasswordReset = (req, res, next) => {
+	const email = req.body.email;
+	const formErrors = validationResult(req);
+
+	if (!formErrors.isEmpty()) {
+		return res.status(422).render('auth/password-reset', {
+			path: '/password-reset',
+			pageTitle: 'Reset Password',
+			successMessage: checkForFlashErrors(req.flash('success')),
+			validationErrors: formErrors.array(),
+			validationErrorMessages: getFlashErrorMessage(formErrors.array()),
+			previousInputs: {
+				email: email,
+			},
+		});
+	}
+
 	crypto.randomBytes(32, (err, buffer) => {
 		if (err) {
 			throw new Error('Server Error: Please try again');
 		}
 
 		const token = buffer.toString('hex');
-		User.findOne({ email: req.body.email })
+		User.findOne({ email: email })
 			.then((user) => {
 				if (!user) {
 					throw new Error('No account with that e-mail found.');
@@ -180,7 +198,7 @@ exports.postPasswordReset = (req, res, next) => {
 
 				//send email
 				transporter.sendMail({
-					to: req.body.email,
+					to: email,
 					from: 'muminovicfahir998@gmail.com',
 					subject: 'Password Reset',
 					html: `
@@ -208,8 +226,8 @@ exports.getNewPassword = (req, res, next) => {
 			res.render('auth/new-password', {
 				path: '/new-password',
 				pageTitle: 'Reset Password',
-				errorMessage: checkErrMsg(req.flash('error')),
-				successMessage: checkErrMsg(req.flash('success')),
+				errorMessage: checkForFlashErrors(req.flash('error')),
+				successMessage: checkForFlashErrors(req.flash('success')),
 				userId: user._id.toString(),
 				passwordToken: token,
 				validationErrors: [],
