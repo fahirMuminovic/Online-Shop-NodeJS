@@ -31,6 +31,7 @@ exports.postAddProduct = (req, res, next) => {
 	const description = req.body.description;
 	const errors = validationResult(req);
 
+	//validation errors on user input
 	if (!errors.isEmpty()) {
 		return res.status(422).render('admin/edit-product', {
 			pageTitle: 'Add Product',
@@ -59,11 +60,12 @@ exports.postAddProduct = (req, res, next) => {
 	product
 		.save()
 		.then((result) => {
+			console.log(result);
 			console.log(`PRODUCT CREATED SUCCESSFULLY`);
 			res.redirect('/admin/products');
 		})
 		.catch((err) => {
-			console.log(err);
+			res.redirect('/500');
 		});
 };
 
