@@ -59,8 +59,9 @@ exports.postLogin = (req, res, next) => {
 				});
 			})
 			.catch((err) => {
-				console.log(err);
-				res.redirect('/login');
+				const error = new Error();
+				error.httpStatusCode = 500;
+				return next(error);
 			});
 	}
 };
@@ -128,11 +129,13 @@ exports.postSignup = (req, res, next) => {
 					to: email,
 					from: 'muminovicfahir998@gmail.com',
 					subject: 'Signup succeeded!',
-					html: '<h1>You successfully sugned up to Node Shop.</h1>',
+					html: '<h1>You successfully signed up to Node Shop.</h1>',
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				const error = new Error();
+				error.httpStatusCode = 500;
+				return next(error);
 			});
 	}
 };
@@ -140,7 +143,9 @@ exports.postSignup = (req, res, next) => {
 exports.postLogout = (req, res, next) => {
 	req.session.destroy((err) => {
 		if (err) {
-			console.log(err);
+			const error = new Error();
+			error.httpStatusCode = 500;
+			return next(error);
 		}
 		res.redirect('/');
 	});
@@ -237,7 +242,9 @@ exports.getNewPassword = (req, res, next) => {
 			});
 		})
 		.catch((err) => {
-			console.log(err);
+			const error = new Error();
+			error.httpStatusCode = 500;
+			return next(error);
 		});
 };
 
@@ -292,7 +299,6 @@ exports.postNewPassword = (req, res, next) => {
 			res.redirect('/login');
 		})
 		.catch((err) => {
-			//console.log(err);
 			req.flash('error', err.message);
 			res.redirect('back');
 		});

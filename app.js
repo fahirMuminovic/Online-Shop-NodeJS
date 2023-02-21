@@ -60,7 +60,8 @@ app.use((req, res, next) => {
 				next();
 			})
 			.catch((err) => {
-				throw new Error(err);0
+				throw new Error(err);
+				0;
 			});
 	}
 });
@@ -84,6 +85,10 @@ app.use(authRoutes);
 
 app.use('/500', errorController.get500);
 app.use(errorController.get404);
+
+app.use((error, req, res, next) => {
+	res.redirect('/500');
+});
 
 //DB connectiond and app startup
 mongoose
