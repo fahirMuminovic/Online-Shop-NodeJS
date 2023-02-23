@@ -31,7 +31,19 @@
             
             <div class="form-control">
                 <label for="productImage">Product Image</label>
-                <input type="file" name="productImage" id="productImage"/>
+                <input 
+                    class="<%= validationErrors.find(err => err.param === 'productImage') ? 'invalid' : '' %>"
+                    type="file" 
+                    name="productImage" 
+                    id="productImage"
+                />
+                <% if (errorMessages) { %>
+                    <% errorMessages.forEach(errorMessage => { %>
+                        <% if(errorMessage.input === 'productImage') {%>
+                            <small class="error"><%= errorMessage.msg %></small>
+                        <% } %>
+                    <% }) %>
+                <% } %>
             </div>
             <div class="form-control">
                 <label for="price">Price</label>

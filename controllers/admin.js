@@ -30,12 +30,14 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 	const title = req.body.title;
-	const imgUrl = req.body.productImage;
+	const uploadedImageFile = req.file;
 	const price = req.body.price;
 	const description = req.body.description;
+	// TODO: remove this
+	console.log(uploadedImageFile);
+	
+	// validation errors on user input
 	const errors = validationResult(req);
-
-	//validation errors on user input
 	if (!errors.isEmpty()) {
 		return res.status(422).render('admin/edit-product', {
 			pageTitle: 'Add Product',
@@ -45,20 +47,19 @@ exports.postAddProduct = (req, res, next) => {
 			validationErrors: errors.array(),
 			product: {
 				title: title,
-				imgUrl: productImage,
 				price: price,
 				description: description,
 			},
 		});
 	}
 
-	//constructor(title, price, imgUrl, description) {
+	// constructor(title, price, imgUrl, description) {
 	const product = new Product({
 		title: title,
 		price: price,
-		imgUrl: productImage,
+		productImagePath: uploadedImageFile.path,
 		description: description,
-		userId: req.user, //in mongoose it is possible to reference the whole user object, mongoose takes the id from this object
+		userId: req.user, // in mongoose it is possible to reference the whole user object, mongoose takes the id from this object
 	});
 
 	product
@@ -85,7 +86,7 @@ exports.getEditProduct = (req, res, next) => {
 	Product.findById(productId)
 		.then((product) => {
 			if (!product) {
-				//TODO: show error page
+				// TODO: show error page
 				return res.redirect('/');
 			}
 			res.render('admin/edit-product', {
@@ -106,14 +107,13 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
 	const productId = req.body.productId;
-
 	const updatedTitle = req.body.title;
 	const updatedPrice = req.body.price;
-	const updatedProductImage = req.body.productImage;
+	const updatedUploadedImageFile = req.file;
 	const updatedDescription = req.body.description;
 
+	
 	const errors = validationResult(req);
-
 	if (!errors.isEmpty()) {
 		return res.status(422).render('admin/edit-product', {
 			pageTitle: 'Edit Product',
@@ -123,7 +123,6 @@ exports.postEditProduct = (req, res, next) => {
 			validationErrors: errors.array(),
 			product: {
 				title: updatedTitle,
-				productImage: updatedProductImage,
 				price: updatedPrice,
 				description: updatedDescription,
 				_id: productId,
@@ -134,12 +133,14 @@ exports.postEditProduct = (req, res, next) => {
 	Product.findById(productId)
 		.then((product) => {
 			if (product.userId.toString() !== req.user._id.toString()) {
-				//TODO error handeling
+				// TODO error handling
 				throw new Error('Restricted Access!');
 			}
 			product.title = updatedTitle;
 			product.price = updatedPrice;
-			product.productImage = updatedProductImage;
+			if (updatedUploadedImageFile) {
+				product.productImagePath = updatedUploadedImageFile.path;
+			}
 			product.description = updatedDescription;
 			return product.save();
 		})

@@ -3,10 +3,13 @@ require('dotenv').config();
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const hasha = require('hasha');
+const { generateHash } = require('random-hash');
 const flash = require('connect-flash');
 
 const User = require('./models/user');
@@ -34,8 +37,36 @@ const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
+//storage engine for storing uploaded files with multer
+const fileStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'images');
+	},
+	filename: (req, file, cb) => {
+		const hash = generateHash({ length: 10 });
+		cb(null, hash + '-' + file.originalname);
+	},
+});
+//file filter for multer
+const fileFilter = (req, file, cb) => {
+	if (
+		file.mimetype === 'image/png' ||
+		file.mimetype === 'image/jpg' ||
+		file.mimetype === 'image/jpeg'
+	) {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
+
 //use middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false })); //form data encoder for strings
+app.use(
+	multer({ storage: fileStorage, fileFilter: fileFilter }).single(
+		'productImage'
+	)
+); //form data encoder for files
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
 	session({
