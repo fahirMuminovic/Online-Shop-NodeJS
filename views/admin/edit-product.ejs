@@ -7,9 +7,12 @@
     <%- include('../includes/navigation.ejs') %>
     
     <main>
-        <form class="product-form"
+        <form 
+            class="product-form"
             action="/admin/<% if(editMode) { %>edit-product<% } else { %>add-product<% } %>"
-            method="POST" novalidate>
+            method="POST" novalidate
+            enctype="multipart/form-data"
+        >
             
             <div class="form-control">
                 <label for="title">Title</label>
@@ -25,19 +28,10 @@
                     <% }) %>
                 <% } %>
             </div>
+            
             <div class="form-control">
-                <label for="imgUrl">Image URL</label>
-                <input
-                    class="<%= validationErrors.find(err => err.param === 'imgUrl') ? 'invalid' : '' %>"
-                    type="text" name="imgUrl" id="imgUrl"
-                    value="<% if(editMode || validationErrors.length > 0) {%><%=product.imgUrl%><% }%>" />
-                <% if (errorMessages) { %>
-                    <% errorMessages.forEach(errorMessage => { %>
-                        <% if(errorMessage.input === 'imgUrl') {%>
-                            <small class="error"><%= errorMessage.msg %></small>
-                        <% } %>
-                    <% }) %>
-                <% } %>
+                <label for="productImage">Product Image</label>
+                <input type="file" name="productImage" id="productImage"/>
             </div>
             <div class="form-control">
                 <label for="price">Price</label>

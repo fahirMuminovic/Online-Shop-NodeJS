@@ -30,7 +30,7 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 	const title = req.body.title;
-	const imgUrl = req.body.imgUrl;
+	const imgUrl = req.body.productImage;
 	const price = req.body.price;
 	const description = req.body.description;
 	const errors = validationResult(req);
@@ -45,7 +45,7 @@ exports.postAddProduct = (req, res, next) => {
 			validationErrors: errors.array(),
 			product: {
 				title: title,
-				imgUrl: imgUrl,
+				imgUrl: productImage,
 				price: price,
 				description: description,
 			},
@@ -56,7 +56,7 @@ exports.postAddProduct = (req, res, next) => {
 	const product = new Product({
 		title: title,
 		price: price,
-		imgUrl: imgUrl,
+		imgUrl: productImage,
 		description: description,
 		userId: req.user, //in mongoose it is possible to reference the whole user object, mongoose takes the id from this object
 	});
@@ -109,7 +109,7 @@ exports.postEditProduct = (req, res, next) => {
 
 	const updatedTitle = req.body.title;
 	const updatedPrice = req.body.price;
-	const updatedImgUrl = req.body.imgUrl;
+	const updatedProductImage = req.body.productImage;
 	const updatedDescription = req.body.description;
 
 	const errors = validationResult(req);
@@ -123,7 +123,7 @@ exports.postEditProduct = (req, res, next) => {
 			validationErrors: errors.array(),
 			product: {
 				title: updatedTitle,
-				imgUrl: updatedImgUrl,
+				productImage: updatedProductImage,
 				price: updatedPrice,
 				description: updatedDescription,
 				_id: productId,
@@ -139,7 +139,7 @@ exports.postEditProduct = (req, res, next) => {
 			}
 			product.title = updatedTitle;
 			product.price = updatedPrice;
-			product.imgUrl = updatedImgUrl;
+			product.productImage = updatedProductImage;
 			product.description = updatedDescription;
 			return product.save();
 		})
