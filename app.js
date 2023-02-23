@@ -14,10 +14,10 @@ const flash = require('connect-flash');
 
 const User = require('./models/user');
 
-//disables mongoose warning about strictQuery
+// disables mongoose warning about strictQuery
 mongoose.set('strictQuery', 'false');
 
-//initailize middleware
+// initailize middleware
 const app = express();
 const sessionStore = new MongoDBStore({
 	uri: process.env.MONGO_URI,
@@ -25,19 +25,19 @@ const sessionStore = new MongoDBStore({
 });
 const csrfProtection = csrf();
 
-//define the default templating engine
+// define the default templating engine
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-//page not found error controller
+// page not found error controller
 const errorController = require('./controllers/error');
 
-//import routes
+// import routes
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
-//storage engine for storing uploaded files with multer
+// storage engine for storing uploaded files with multer
 const fileStorage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, 'images');
@@ -47,7 +47,7 @@ const fileStorage = multer.diskStorage({
 		cb(null, hash + '-' + file.originalname);
 	},
 });
-//file filter for multer
+// file filter for multer
 const fileFilter = (req, file, cb) => {
 	if (
 		file.mimetype === 'image/png' ||
@@ -60,14 +60,17 @@ const fileFilter = (req, file, cb) => {
 	}
 };
 
-//use middleware
-app.use(bodyParser.urlencoded({ extended: false })); //form data encoder for strings
+// use middleware
+app.use(bodyParser.urlencoded({ extended: false })); // form data encoder for strings
 app.use(
 	multer({ storage: fileStorage, fileFilter: fileFilter }).single(
 		'productImage'
-	)
-); //form data encoder for files
+	) // form data encoder for files
+); 
+
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use(
 	session({
 		secret: 'my secret',
@@ -76,10 +79,12 @@ app.use(
 		store: sessionStore,
 	})
 );
-app.use(csrfProtection); //cross site request forgery attacks
-app.use(flash()); //error messagess in req.body/sessions
 
-//authentication and tokens
+app.use(csrfProtection); // cross site request forgery attacks
+
+app.use(flash()); // error messagess in req.body/sessions
+
+// authentication and tokens
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isLoggedIn;
 	res.locals.csrfToken = req.csrfToken();

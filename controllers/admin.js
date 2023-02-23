@@ -33,8 +33,6 @@ exports.postAddProduct = (req, res, next) => {
 	const uploadedImageFile = req.file;
 	const price = req.body.price;
 	const description = req.body.description;
-	// TODO: remove this
-	console.log(uploadedImageFile);
 	
 	// validation errors on user input
 	const errors = validationResult(req);
@@ -57,7 +55,7 @@ exports.postAddProduct = (req, res, next) => {
 	const product = new Product({
 		title: title,
 		price: price,
-		productImagePath: uploadedImageFile.path,
+		imagePath: '/' + uploadedImageFile.path,
 		description: description,
 		userId: req.user, // in mongoose it is possible to reference the whole user object, mongoose takes the id from this object
 	});
@@ -139,7 +137,7 @@ exports.postEditProduct = (req, res, next) => {
 			product.title = updatedTitle;
 			product.price = updatedPrice;
 			if (updatedUploadedImageFile) {
-				product.productImagePath = updatedUploadedImageFile.path;
+				product.imagePath = '/' + updatedUploadedImageFile.path;
 			}
 			product.description = updatedDescription;
 			return product.save();
