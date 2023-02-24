@@ -47,7 +47,7 @@ router.post(
 									.compare(value, user.password)
 									.then((compareResult) => {
 										if (compareResult === false) {
-											return reject('Wrong password!')
+											return reject('Wrong password!');
 										} else {
 											return resolve(true);
 										}
@@ -90,7 +90,7 @@ router.post(
 				User.findOne({ username: value })
 					.then((user) => {
 						if (user) {
-							throw new Error('This username is taken.')
+							throw new Error('This username is taken.');
 						}
 						return true;
 					})
@@ -121,28 +121,7 @@ router.post(
 
 router.post('/logout', authController.postLogout);
 
-router.get(
-	'/password-reset',
-	[
-		body('email')
-			.isEmail()
-			.withMessage('The entered e-mail is not valid!')
-			.normalizeEmail()
-			.trim()
-			.custom((value) => {
-				return User.findOne({ email: value }).then((user) => {
-					if (!user) {
-						return Promise.reject(
-							'No user with this e-mail exists!'
-						);
-					}
-					return Promise.resolve(true);
-				});
-			}),
-	],
-	isLoggedIn,
-	authController.getPasswordReset
-);
+router.get('/password-reset', isLoggedIn, authController.getPasswordReset);
 
 router.post(
 	'/password-reset',
