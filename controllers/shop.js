@@ -155,8 +155,6 @@ exports.postOrder = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
 	const orderId = req.params.orderId;
-	const invoiceName = 'invoice-' + orderId + '.pdf';
-	const invoicePath = path.join('data', 'invoices', invoiceName);
 
 	//check if user is trying to download a invoice that does belong to that user
 	Order.findById(orderId)
@@ -170,15 +168,16 @@ exports.getInvoice = (req, res, next) => {
 				return res.redirect('/403');
 			} else {
 				//serve invoice for this user
-				fs.readFile(invoicePath, (err, data) => {
-					if (err) return next(err);
-					res.setHeader(
-						'Content-Disposition',
-						'inline; filename="' + invoiceName + '"'
-					);
-					res.setHeader('Content-Type', 'application/pdf');
-					res.send(data);
-				});
+				const invoiceName = 'invoice-' + orderId + '.pdf';
+				const invoicePath = path.join('data', 'invoices', invoiceName);
+				const file = fs.createReadStream(invoicePath);
+
+				res.setHeader(
+					'Content-Disposition',
+					'inline; filename="' + invoiceName + '"'
+				);
+				res.setHeader('Content-Type', 'application/pdf');
+				file.pipe(res);
 			}
 		})
 		.catch((err) => {
