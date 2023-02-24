@@ -1,9 +1,12 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
-const { ObjectID } = require('mongodb');
+
 const checkForFlashErrors = require('../util/checkForFlashErrors');
+
 const fs = require('fs');
 const path = require('path');
+
+const PDFDocument = require('pdfkit')
 
 exports.getIndex = (req, res, next) => {
 	Product.find()
@@ -172,12 +175,32 @@ exports.getInvoice = (req, res, next) => {
 				const invoicePath = path.join('data', 'invoices', invoiceName);
 				const file = fs.createReadStream(invoicePath);
 
+				//set response headers
 				res.setHeader(
 					'Content-Disposition',
 					'inline; filename="' + invoiceName + '"'
 				);
 				res.setHeader('Content-Type', 'application/pdf');
-				file.pipe(res);
+
+				//create invoice PDF
+				const pdfDoc = new PDFDocument();
+				let totalPrice = 0;
+
+				//store pdf on server
+				pdfDoc.pipe(fs.createWriteStream(invoicePath));
+
+				pdfDoc.pipe(res);
+
+				pdfDoc.fontSize(26).text('Invoice');
+				pdfDoc.text('-------------------------------------');
+				order.products.forEach( prod => {
+					totalPrice += prod.quantity * prod.productData.price;
+					pdfDoc.fontSize(16).text(prod.productData.title + ' - ' + prod.quantity + ' x ' + '$' + prod.productData.price);
+				});
+				pdfDoc.text('__________________');
+				pdfDoc.fontSize(18).text('Total Price: $' + totalPrice);
+
+				pdfDoc.end()
 			}
 		})
 		.catch((err) => {
