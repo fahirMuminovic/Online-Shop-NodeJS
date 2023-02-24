@@ -8,7 +8,6 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
-const hasha = require('hasha');
 const { generateHash } = require('random-hash');
 const flash = require('connect-flash');
 

@@ -1,5 +1,6 @@
 const Product = require('../models/product');
 const Order = require('../models/order');
+const { ObjectID } = require('mongodb');
 const checkForFlashErrors = require('../util/checkForFlashErrors');
 const fs = require('fs');
 const path = require('path');
@@ -157,13 +158,30 @@ exports.getInvoice = (req, res, next) => {
 	const invoiceName = 'invoice-' + orderId + '.pdf';
 	const invoicePath = path.join('data', 'invoices', invoiceName);
 
-	fs.readFile(invoicePath, (err, data) => {
-		if (err) return next(err);
-		res.setHeader(
-			'Content-Disposition',
-			'inline; filename="' + invoiceName + '"'
-		);
-		res.setHeader('Content-Type', 'application/pdf');
-		res.send(data);
-	});
+	//check if user is trying to download a invoice that does belong to that user
+	Order.findById(orderId)
+		.then((order) => {
+			//no such order found
+			if (!order) {
+				return next(new Error('No order found!'));
+			}
+			//check if order belongs to user
+			else if (!req.user._id.equals(order.user.userId)) {
+				return res.redirect('/403');
+			} else {
+				//serve invoice for this user
+				fs.readFile(invoicePath, (err, data) => {
+					if (err) return next(err);
+					res.setHeader(
+						'Content-Disposition',
+						'inline; filename="' + invoiceName + '"'
+					);
+					res.setHeader('Content-Type', 'application/pdf');
+					res.send(data);
+				});
+			}
+		})
+		.catch((err) => {
+			next(err);
+		});
 };
