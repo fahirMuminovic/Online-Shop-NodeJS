@@ -3,7 +3,7 @@ const PDFDocument = require('pdfkit');
 
 // TODO: implement dynamic user address and balance 
 
-function createInvoice(invoice, path, cb) {
+function createInvoice(invoice, path, callBack) {
 	let doc = new PDFDocument({ size: 'A4', margin: 50 });
 
 	generateHeader(doc);
@@ -15,7 +15,7 @@ function createInvoice(invoice, path, cb) {
 	const stream = doc.pipe(fs.createWriteStream(path));
 
 	stream.on('finish', () => {
-		cb();
+		callBack();
 	});
 }
 
