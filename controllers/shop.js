@@ -9,8 +9,14 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const { createInvoice } = require('../util/createInvoice');
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getIndex = (req, res, next) => {
+	const page = req.query.page;
+
 	Product.find()
+		.skip((page - 1) * ITEMS_PER_PAGE)
+		.limit(ITEMS_PER_PAGE)
 		.then((products) => {
 			res.render('shop/index', {
 				prods: products,
@@ -176,9 +182,9 @@ exports.getInvoice = (req, res, next) => {
 				const invoicePath = path.join('data', 'invoices', invoiceName);
 
 				let totalPrice = 0;
-				order.products.forEach(product => {
+				order.products.forEach((product) => {
 					totalPrice += product.productData.price * product.quantity;
-				})  
+				});
 
 				const invoice = {
 					shipping: {
