@@ -9,7 +9,7 @@ const path = require('path');
 const PDFDocument = require('pdfkit');
 const { createInvoice } = require('../util/createInvoice');
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 1;
 
 exports.getIndex = (req, res, next) => {
 	const page = Number(req.query.page) || 1;
