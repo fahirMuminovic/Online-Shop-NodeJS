@@ -16,6 +16,7 @@ exports.getLogin = (req, res, next) => {
 		validationErrors: [],
 		validationErrorMessages: [],
 		previousInputs: {},
+		successMessage: checkForFlashErrors(req.flash('success')),
 	});
 };
 
@@ -185,20 +186,12 @@ exports.postPasswordReset = (req, res, next) => {
 					'success',
 					'An e-mail with further instructions has been sent. Please check your inbox.'
 				);
-				res.redirect('/password-reset');
-
+				
 				//send email
-				transporter.sendMail({
-					to: email,
-					from: 'muminovicfahir998@gmail.com',
-					subject: 'Password Reset',
-					html: `
-						<p>You requested a password reset</p>
-						<p>Click this <a href="http://localhost:3000/password-reset/${token}">link</a> to reset your password</p>
-						<hr>
-						<p>The reset link is only valid for one hour</p>
-					`,
-				});
+				const passwordResetLink = `http://localhost:3000/password-reset/${token}`;
+				sendEmail(email, 'Node Shop', email, 'passwordReset', passwordResetLink)
+				
+				res.redirect('/password-reset');
 			})
 			.catch((err) => {
 				req.flash('error', err.message);

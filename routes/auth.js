@@ -67,6 +67,8 @@ router.post(
 	'/signup',
 	[
 		body('email')
+			.notEmpty()
+			.withMessage('Please fill out this field!')
 			.isEmail()
 			.withMessage('The entered e-mail is not valid!')
 			.normalizeEmail()
@@ -82,11 +84,12 @@ router.post(
 
 		body('username')
 			.trim()
+			.notEmpty()
+			.withMessage('Please fill out this field!')
 			.custom((value) => {
 				return User.findOne({ username: value })
 					.then((user) => {
 						if (user) {
-							console.log(this);
 							throw new Error('This username is taken.');
 						}
 						return Promise.resolve();
@@ -97,6 +100,8 @@ router.post(
 			}),
 
 		body('password')
+			.notEmpty()
+			.withMessage('Please fill out this field!')
 			.isLength({ min: 6 })
 			.withMessage('Password must contain at least 6 characters')
 			.trim(),
@@ -124,6 +129,8 @@ router.post(
 	'/password-reset',
 	[
 		body('email')
+			.notEmpty()
+			.withMessage('Please fill out this field!')
 			.isEmail()
 			.withMessage('The entered e-mail is not valid!')
 			.normalizeEmail()

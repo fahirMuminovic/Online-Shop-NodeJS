@@ -8,6 +8,10 @@
 
 		<main>
 			<form class="login-form" action="/login" method="POST" novalidate>
+				<% if(successMessage) {%>
+					<div class="user-message user-message--success"><%= successMessage %></div>
+				<% } %>
+
 				<div class="form-control">
 					<label for="email">E-mail</label>
 					<input 
@@ -47,7 +51,6 @@
 				
 				<button class="btn" type="submit">Login</button>
 
-			
 				<a class="form-control reset-password" href="/password-reset">Forgot your password? Click to reset it.</a>
 			</form>
 		</main>
