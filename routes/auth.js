@@ -81,18 +81,15 @@ router.post(
 			.trim(),
 
 		body('username')
-			.notEmpty()
-			.withMessage("Username can't be empty")
-			.isAlphanumeric()
-			.withMessage('Only letters and numbers are allowed')
 			.trim()
 			.custom((value) => {
-				User.findOne({ username: value })
+				return User.findOne({ username: value })
 					.then((user) => {
 						if (user) {
+							console.log(this);
 							throw new Error('This username is taken.');
 						}
-						return true;
+						return Promise.resolve();
 					})
 					.catch((err) => {
 						return Promise.reject(err);

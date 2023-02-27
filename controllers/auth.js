@@ -6,16 +6,7 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const checkForFlashErrors = require('../util/checkForFlashErrors');
 const getFlashErrorMessage = require('../util/getFlashErrorMessage');
-
-// email transporter using mailtrap
-var transporter = nodemailer.createTransport({
-	host: 'sandbox.smtp.mailtrap.io',
-	port: 2525,
-	auth: {
-		user: '587a39a9055ac9',
-		pass: '4cde68cbc553ef',
-	},
-});
+const { sendEmail } = require('../util/sendEmail');
 
 exports.getLogin = (req, res, next) => {
 	res.render('auth/login', {
@@ -124,13 +115,7 @@ exports.postSignup = (req, res, next) => {
 			.then((result) => {
 				//redirect to login page
 				res.redirect('/login');
-				//send confirmation email
-				return transporter.sendMail({
-					to: email,
-					from: 'muminovicfahir998@gmail.com',
-					subject: 'Signup succeeded!',
-					html: '<h1>You successfully signed up to Node Shop.</h1>',
-				});
+				sendEmail(username, 'Node Shop', email, 'signup', null);
 			})
 			.catch((err) => {
 				const error = new Error();
