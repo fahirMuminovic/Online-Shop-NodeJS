@@ -25,4 +25,6 @@ router.post('/create-order', isNotLoggedIn, shopController.postOrder);
 
 router.get('/orders/:orderId', isNotLoggedIn, shopController.getInvoice);
 
+router.get('/profile/:username', isNotLoggedIn, shopController.getProfile);
+
 module.exports = router;

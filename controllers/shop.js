@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 const Order = require('../models/order');
 
 const checkForFlashErrors = require('../util/checkForFlashErrors');
@@ -233,5 +234,23 @@ exports.getInvoice = (req, res, next) => {
 		.catch((err) => {
 			console.log(err);
 			next(err);
+		});
+};
+
+exports.getProfile = (req, res, next) => {
+	User.findOne({ username: req.params.username })
+		.then((user) => {
+			res.render('shop/profile', {
+				path: '/profile',
+				pageTitle: 'Your Profile',
+				user: user,
+				validationErrors: [],
+				validationErrorMessages: [],
+			});
+		})
+		.catch((err) => {
+			const error = new Error();
+			error.httpStatusCode = 500;
+			return next(error);
 		});
 };

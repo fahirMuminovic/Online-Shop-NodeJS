@@ -51,7 +51,8 @@
 
 						<% if(username) {%>
 							<li class="main-header__item">
-								<a class="index-username-greet"><%= username %></a>
+								<!-- index-username-greet  -->
+								<a class="index-username-greet <%= path === '/profile' ? 'active' : '' %>" href="/profile/<%=username%>"><%= username %></a>
 							</li>
 						<% } %>
 					<% } %>

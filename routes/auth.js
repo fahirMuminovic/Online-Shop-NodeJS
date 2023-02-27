@@ -187,6 +187,4 @@ router.post(
 	authController.postNewPassword
 );
 
-router.get('profile', isNotLoggedIn, )
-
 module.exports = router;
