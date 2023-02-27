@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const authController = require('../controllers/auth');
 const User = require('../models/user');
 const isLoggedIn = require('../middleware/isLoggedIn');
+const isNotLoggedIn = require('../middleware/isNotLoggedIn');
 
 const router = express.Router();
 
@@ -185,5 +186,7 @@ router.post(
 	isLoggedIn,
 	authController.postNewPassword
 );
+
+router.get('profile', isNotLoggedIn, )
 
 module.exports = router;
