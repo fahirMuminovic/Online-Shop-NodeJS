@@ -1,31 +1,63 @@
 <%- include('../includes/head.ejs') %>
 <link rel="stylesheet" href="/css/profile.css">
+<script defer src="/js/profile.js"></script>
 </head>
 
 <body>
     <%- include('../includes/navigation.ejs') %>
     
-    <main>
-        <div class="wrapper">
+    <main class="grid">
+
+        <div class="side-menu__container">
+          <ul class="side-menu__list">
+            <li class="side-menu__list_item">
+              <a href="/username" id="username-link" data="username">Username</a>
+            </li>
+            <li class="side-menu__list_item">
+              <a href="/email" id="email-link" data="email">Email</a>
+            </li>
+            <li class="side-menu__list_item">
+              <a href="/password" id="password-link" data="password">Password</a>
+            </li>
+            <li class="side-menu__list_item">
+              <a href="/address" id="address-link" data="address">Address</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="user-info username-info">
+            <form action="">
+              <div class="form-control">
+                  <label for="username">Username</label>
+                  <input type="text" name="username" id="username" value="<%=user.username%>">
+              </div>
+              <div class="form-control">
+                  <label for="new-username">New Username</label>
+                  <input type="text" name="new-username" id="new-username" value="">
+              </div>
+            </form>
+        </div>
+
+        <div class="user-info address-info">
           <form>
-            <div>
+            <div class="form-control">
               <label for="name">Name</label>
               <input required type="text" id="name" name="name" autocomplete="name" enterkeyhint="next">
             </div>
-            <div>
+            <div class="form-control">
               <label for="street-address">Street address</label>
               <input type="text" id="street-address" name="street-address" autocomplete="street-address" required enterkeyhint="next"></input>
             
             </div>
-            <div>
+            <div class="form-control">
               <label for="postal-code">ZIP or postal code (optional)</label>
               <input class="postal-code" id="postal-code" name="postal-code" autocomplete="postal-code" enterkeyhint="next">
             </div>
-            <div>
+            <div class="form-control">
               <label for="city">City</label>
               <input required type="text" id="city" name="city" autocomplete="address-level2" enterkeyhint="next">
             </div>
-            <div>
+            <div class="form-control">
               <label for="country">Country or region</label>
               <select id="country" name="country" autocomplete="country" enterkeyhint="done" required>
                   <option></option>
@@ -282,7 +314,7 @@
             </div>
 
             <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-            <button>Save address</button>
+            <button class="btn save_address">Save address</button>
           </form>
         </div>
       </main>

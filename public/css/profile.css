@@ -1,33 +1,109 @@
+main {
+	display: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+.grid {
+  height: 95vh;
+  width: 100vw;
+
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  justify-content: start;
+  align-content: start;
+}
+
+.grid-item {
+
+}
+
+div.side-menu__container {
+	height: 98vh;
+	width: 20vw;
+
+	background-color: #00695c;
+}
+
+ul.side-menu__list {
+	list-style: none;
+	padding: 0;
+	margin-top: 5em;
+
+	width: 100%;
+
+	background-color: #00695c;
+}
+
+li.side-menu__list_item {
+	padding: 15px 15px;
+}
+
+li.side-menu__list_item a {
+	text-decoration: none;
+	color: azure;
+}
+
+li.side-menu__list_item a:hover, 
+li.side-menu__list_item a:active {
+	text-decoration: none;
+	color: #ffeb3b;
+}
+
+li.side-menu__list_item a.active {
+  color: #ffeb3b;
+}
+
+.username-info {
+  display: none;
+  align-items: baseline;
+  justify-content: center;
+  width: 80vw;
+}
+
+.address-info {
+	display: none;
+	min-width: 50vw;
+
+	align-items: center;
+	justify-content: center;
+
+	padding: 15px;
+	margin: 3rem 10em;
+}
+
 form {
-    width: 90vw;
-    max-width: 20em;
-  }
-  
-  button {
-    margin-top: 2rem;
-  }
-  
-  input {
-    border: 1px solid;
-    padding: 0.3em;
-    width: 100%;
-  }
-  
-  textarea {
-    width: 100%;
-    min-height: 6em;
-  }
-  
-  label {
-    display: block;
-    font-size: 1.2rem;
-    margin-top: 1rem;
-  }
-  
-  select {
-    font-size: 16px;
-  }
-  
-  .postal-code {
-    width: 50%;
-  }
+	display: block;
+	width: 75%;
+	max-width: 20em;
+}
+
+button.btn.save_address {
+	margin-top: 2rem;
+}
+
+input {
+	border: 1px solid;
+	padding: 0.3em;
+	width: 100%;
+}
+
+textarea {
+	width: 100%;
+	min-height: 6em;
+}
+
+label {
+	display: block;
+	font-size: 1.2rem;
+	margin-top: 1rem;
+}
+
+select {
+	font-size: 16px;
+}
+
+.postal-code {
+	width: 50%;
+}
