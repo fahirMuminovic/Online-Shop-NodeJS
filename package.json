@@ -20,7 +20,7 @@
     "dotenv": "^16.0.3",
     "ejs": "^3.1.10",
     "emailjs": "^4.0.1",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "express-session": "^1.17.3",
     "express-validator": "^6.14.3",
     "hasha": "^5.2.2",
